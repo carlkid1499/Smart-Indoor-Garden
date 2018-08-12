@@ -2,6 +2,14 @@
 /* 1 Relay Switch to control pumop */
 /* RTC add on to keep track of time */
 
+// use #define to set the I/O numbers, since these will never change - this saves us memory while the Arduino is running
+#define BUTTON1 1
+#define RELAY1  2
+
+//variables to hold the current status of the button.(LOW == unpressed, HIGH = pressed)
+int buttonState1 = 0;         
+int buttonState2 = 0;
+
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
 #include <Wire.h>
 #include "RTClib.h"
@@ -17,6 +25,15 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 
 void setup () 
 {
+/* Code for relay switch and pump */
+
+   // set the pin for the Buzzer as output:
+  pinMode(BUTTON1, INPUT);          
+
+  // initialize the pins for the pushbutton as inputs:
+  pinMode(RELAY1, OUTPUT);   
+/* End of code for relay switch and pump */ 
+
 /* Code for the RTC Unit */
 #ifndef ESP8266
   while (!Serial); // for Leonardo/Micro/Zero
@@ -41,6 +58,16 @@ void setup ()
 
 void loop () 
 {
+/* Code for relay switch and pump */ 
+  //use digitalRead to store the current state of the pushbutton in one of the 'buttonState' variables
+  //when pressed down, digitalRead() will read a HIGH signal. Otherwise, digitalRead will read a LOW signal
+  buttonState1 = digitalRead(BUTTON1);
+  
+  //digital write will send whatever signal the the pushbutton currently has to the relay.
+  //this means when the pushbutton is HIGH(pressed), the relay will go HIGH(Activated)
+  digitalWrite(RELAY1, buttonState1);
+/* End of code for relay switch and pump */  
+
 /* Code for the RTC Unit */
     DateTime now = rtc.now();
     Serial.print(now.year(), DEC);
