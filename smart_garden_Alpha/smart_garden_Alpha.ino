@@ -23,7 +23,8 @@ RTC_PCF8523 rtc;
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 DateTime Get_Future_Time();
-
+DateTime future;
+DateTime stopwater;
 void setup () 
 {
 /* Code for relay switch and pump */
@@ -55,6 +56,8 @@ void setup ()
     // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   }
 /* End of code for the RTC Unit */
+future = Get_Future_Time();
+stopwater (future + TimeSpan(0,0,0,10));
 }
 
 void loop () 
@@ -76,28 +79,42 @@ void loop ()
     Serial.print(now.second(), DEC);
     Serial.println();
     
-    Get_Future_Time();
+    //Get_Future_Time();
     Serial.print(" now + 3d ");
-    Serial.print(Get_Future_Time().year(), DEC);
+    Serial.print(future.year(), DEC);
     Serial.print('/');
-    Serial.print(Get_Future_Time().month(), DEC);
+    Serial.print(future.month(), DEC);
     Serial.print('/');
-    Serial.print(Get_Future_Time().day(), DEC);
+    Serial.print(future.day(), DEC);
     Serial.print(' ');
-    Serial.print(Get_Future_Time().hour(), DEC);
+    Serial.print(future.hour(), DEC);
     Serial.print(':');
-    Serial.print(Get_Future_Time().minute(), DEC);
+    Serial.print(future.minute(), DEC);
     Serial.print(':');
-    Serial.print(Get_Future_Time().second(), DEC);
+    Serial.print(future.second(), DEC);
     Serial.println();
     Serial.println();
-    delay(3000);
+    delay(1000);
 /* End of code for the RTC Unit */
+/* Begin code for Relay */
+if((now.year() == stopwater.year()) && (now.month() == stopwater.month()) &&
+  (now.day() == stopwater.day()) && (now.hour() == stopwater.hour()) && 
+  (now.minute() == stopwater.minute()) && (now.second() == stopwater.second()))
+  {
+    digitalWrite(RELAY1,0);
+  }
+  
+  if( (now.year() == future.year()) && (now.month() == future.month()) &&
+  (now.day() == future.day()) && (now.hour() == future.hour()) && 
+  (now.minute() == future.minute()) && (now.second() == future.second()) )
+  {
+    digitalWrite(RELAY1,1);
+  }
 }
 
 DateTime Get_Future_Time() //  Funtion to grab future time 3 days
 {
     DateTime now = rtc.now();
-    DateTime future (now + TimeSpan(3,0,0,0));
+    DateTime future (now + TimeSpan(0,0,0,10));
     return future;
 }
