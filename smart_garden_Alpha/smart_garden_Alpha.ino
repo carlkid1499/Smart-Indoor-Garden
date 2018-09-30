@@ -1,6 +1,6 @@
 /* Smart Garden Project */
 /* 1 Relay Switch to control pumop */
-/* RTC add on to keep track of time */
+/* RTC added on to keep track of time */
 
 // use #define to set the I/O numbers, since these will never change - this saves us memory while the Arduino is running
 #define BUTTON1 1
@@ -22,6 +22,7 @@ int buttonState2 = 0;
 RTC_PCF8523 rtc;
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+DateTime Get_Future_Time();
 
 void setup () 
 {
@@ -58,18 +59,8 @@ void setup ()
 
 void loop () 
 {
-/* Code for relay switch and pump */ 
-  //use digitalRead to store the current state of the pushbutton in one of the 'buttonState' variables
-  //when pressed down, digitalRead() will read a HIGH signal. Otherwise, digitalRead will read a LOW signal
-  buttonState1 = digitalRead(BUTTON1);
-  
-  //digital write will send whatever signal the the pushbutton currently has to the relay.
-  //this means when the pushbutton is HIGH(pressed), the relay will go HIGH(Activated)
-  digitalWrite(RELAY1, buttonState1);
-/* End of code for relay switch and pump */  
-
 /* Code for the RTC Unit */
-    DateTime now = rtc.now();
+    DateTime now = rtc.now(); // grabs current time
     Serial.print(now.year(), DEC);
     Serial.print('/');
     Serial.print(now.month(), DEC);
@@ -84,27 +75,29 @@ void loop ()
     Serial.print(':');
     Serial.print(now.second(), DEC);
     Serial.println();
-    Serial.print(" since midnight 1/1/1970 = ");
-    Serial.print(now.unixtime());
-    Serial.print("s = ");
-    Serial.print(now.unixtime() / 86400L);
-    Serial.println("d");
-    // calculate a date which is 7 days and 30 seconds into the future
-    DateTime future (now + TimeSpan(7,12,30,6));
-    Serial.print(" now + 7d + 30s: ");
-    Serial.print(future.year(), DEC);
+    
+    Get_Future_Time();
+    Serial.print(" now + 3d ");
+    Serial.print(Get_Future_Time().year(), DEC);
     Serial.print('/');
-    Serial.print(future.month(), DEC);
+    Serial.print(Get_Future_Time().month(), DEC);
     Serial.print('/');
-    Serial.print(future.day(), DEC);
+    Serial.print(Get_Future_Time().day(), DEC);
     Serial.print(' ');
-    Serial.print(future.hour(), DEC);
+    Serial.print(Get_Future_Time().hour(), DEC);
     Serial.print(':');
-    Serial.print(future.minute(), DEC);
+    Serial.print(Get_Future_Time().minute(), DEC);
     Serial.print(':');
-    Serial.print(future.second(), DEC);
+    Serial.print(Get_Future_Time().second(), DEC);
     Serial.println();
     Serial.println();
     delay(3000);
 /* End of code for the RTC Unit */
+}
+
+DateTime Get_Future_Time() //  Funtion to grab future time 3 days
+{
+    DateTime now = rtc.now();
+    DateTime future (now + TimeSpan(3,0,0,0));
+    return future;
 }
