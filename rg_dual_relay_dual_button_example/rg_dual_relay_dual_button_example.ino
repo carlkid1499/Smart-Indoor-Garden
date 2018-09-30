@@ -1,3 +1,5 @@
+#include <RTClib.h>
+
 /**************************************************************************
  *  This example shows how to control two relays using two pushbuttons.
  *  We will read the input from the button using digitalRead(), and based on that
