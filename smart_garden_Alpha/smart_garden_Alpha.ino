@@ -4,15 +4,6 @@
  * DIO 0: LED, DIO 1: Push Button DIO 2: Relay
  */
 
-// use #define to set the I/O numbers, since these will never change - this saves us memory while the Arduino is running
-#define LED_1    0
-#define BUTTON_1 1
-#define RELAY_1  2
-
-//variables to hold the current status of the button.(LOW == unpressed, HIGH = pressed)
-int buttonState1 = 0;         
-int buttonState2 = 0;
-
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
 #include <Wire.h>
 #include "RTClib.h"
@@ -24,23 +15,20 @@ int buttonState2 = 0;
 
 RTC_PCF8523 rtc;
 
-char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-DateTime Get_Future_Time();
-void Water_On();
-void Water_Off();
-DateTime future;
-DateTime stopwater;
-bool OnOff_LED;
-bool OnOff_Button;
+// use #define to set the I/O numbers, since these will never change - this saves us memory while the Arduino is running
+#define LED_1    0
+#define BUTTON_1 1
+#define RELAY_1  2
 
 void setup () 
 {
   // LED
-  pinMode(LED_1, OUTPUT);
-/* Code for relay switch and pump */
+  #define LED_BUILTIN 0
+  pinMode(LED_BUILTIN, OUTPUT);
+/* Code for relay switch, pump, and button */
   pinMode(BUTTON_1, INPUT);          
   pinMode(RELAY_1, OUTPUT);   
-/* End of code for relay switch and pump */ 
+/* End of code for relay switch, pump, and button */ 
 
 /* Code for the RTC Unit */
 #ifndef ESP8266
@@ -66,58 +54,7 @@ stopwater = (future + TimeSpan(0,0,0,5));
 
 void loop () 
 {
-/* Code for the RTC Unit
-    DateTime now = rtc.now(); // grabs current time
-    Serial.print(now.year(), DEC);
-    Serial.print('/');
-    Serial.print(now.month(), DEC);
-    Serial.print('/');
-    Serial.print(now.day(), DEC);
-    Serial.print(" (");
-    Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
-    Serial.print(") ");
-    Serial.print(now.hour(), DEC);
-    Serial.print(':');
-    Serial.print(now.minute(), DEC);
-    Serial.print(':');
-    Serial.print(now.second(), DEC);
-    Serial.println();
-    Serial.println();
-    delay(1000);
-End of code for the RTC Unit */
-
-/* Begin code for Relay */
-  DateTime now = rtc.now();
-  if( (now.year() == future.year()) && (now.month() == future.month()) &&
-  (now.day() == future.day()) && (now.hour() == future.hour()) && 
-  (now.minute() == future.minute()) && (now.second() == future.second()) )
-  {
-  Water_On();
-  Serial.println("stuck here");
-  }
-  else if((now.year() == stopwater.year()) && (now.month() == stopwater.month()) &&
-    (now.day() == stopwater.day()) && (now.hour() == stopwater.hour()) && 
-    (now.minute() == stopwater.minute()) && (now.second() == stopwater.second()))
-  {
-  Water_Off();
-  }
-
-  while(OnOff_LED = true)
-  {
-    digitalWrite(LED_1, HIGH); 
-    delay(500); 
-    digitalWrite(LED_1, LOW);
-    delay(500);
-  }
-  while(OnOff_LED = false)
-  {
-    digitalWrite(LED_1, HIGH); 
-    delay(1000); 
-    digitalWrite(LED_1, LOW);
-    delay(1000);
-  }
-/* End code for Relay */
-
+  Check_Water();
 }
 
 DateTime Get_Future_Time() //  Funtion to grab future time 3 days
@@ -141,12 +78,30 @@ DateTime Get_Future_Time() //  Funtion to grab future time 3 days
     return future;
 }
 
+void Check_Water()
+{
+  DateTime now = rtc.now();
+  /* Begin code for Relay */
+  if( (now.year() == future.year()) && (now.month() == future.month()) &&
+  (now.day() == future.day()) && (now.hour() == future.hour()) && 
+  (now.minute() == future.minute()) && (now.second() == future.second()) )
+  {
+  Water_On();
+  }
+  if((now.year() == stopwater.year()) && (now.month() == stopwater.month()) &&
+    (now.day() == stopwater.day()) && (now.hour() == stopwater.hour()) && 
+    (now.minute() == stopwater.minute()) && (now.second() == stopwater.second()))
+  {
+  Water_Off();
+  }
+  /* End code for Relay */ 
+}
+
 void Water_On() // check current time against future time
 {
     Serial.println();
     Serial.println("Message: Water pump on");
     digitalWrite(RELAY_1,1);
-    OnOff = true;
 }
 
 void Water_Off() // checks current time against stop time
@@ -158,5 +113,4 @@ void Water_Off() // checks current time against stop time
     Serial.println();
     Serial.println("Message: Seting new stopwater time");
     stopwater = (future + TimeSpan(0,0,0,5));
-    OnOff = false;
 }
