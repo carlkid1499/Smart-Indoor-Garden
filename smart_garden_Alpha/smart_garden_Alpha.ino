@@ -10,7 +10,7 @@
 
 #if defined(ARDUINO_ARCH_SAMD)
 // for Zero, output on USB Serial console, remove line below if using programming port to program the Zero!
-   #define Serial SerialUSB
+#define Serial SerialUSB
 #endif
 
 RTC_PCF8523 rtc;
@@ -20,36 +20,43 @@ RTC_PCF8523 rtc;
 #define BUTTON_1 1
 #define RELAY_1  2
 
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+DateTime future;
+DateTime stopwater;
+bool OnOff;s
+
 void setup () 
 {
   // LED
-  #define LED_BUILTIN 0
-  pinMode(LED_BUILTIN, OUTPUT);
-/* Code for relay switch, pump, and button */
+  #define LED_1 0
+  pinMode(LED_1, OUTPUT);
+  /* Code for relay switch, pump, and button */
   pinMode(BUTTON_1, INPUT);          
   pinMode(RELAY_1, OUTPUT);   
-/* End of code for relay switch, pump, and button */ 
+  /* End of code for relay switch, pump, and button */ 
 
-/* Code for the RTC Unit */
-#ifndef ESP8266
-  while (!Serial); // for Leonardo/Micro/Zero
-#endif
+  /* Code for the RTC Unit */
+  #ifndef ESP8266
+    while (!Serial); // for Leonardo/Micro/Zero
+  #endif
 
   Serial.begin(57600);
-  if (! rtc.begin()) {
+  if (! rtc.begin()) 
+  {
     Serial.println("Couldn't find RTC");
     while (1);
   }
 
-  if (! rtc.initialized()) {
+  if (! rtc.initialized()) 
+  {
     Serial.println("RTC is NOT running!");
     // following line sets the RTC to the date & time this sketch was compiled
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
-/* End of code for the RTC Unit */
+  /* End of code for the RTC Unit */
 
-future = Get_Future_Time();
-stopwater = (future + TimeSpan(0,0,0,5));
+  future = Get_Future_Time();
+  stopwater = (future + TimeSpan(0,0,0,5));
 }
 
 void loop () 
