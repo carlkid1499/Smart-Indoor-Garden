@@ -30,6 +30,8 @@ void Water_On();
 void Water_Off();
 DateTime future;
 DateTime stopwater;
+bool OnOff_LED;
+bool OnOff_Button;
 
 void setup () 
 {
@@ -59,7 +61,7 @@ void setup ()
 /* End of code for the RTC Unit */
 
 future = Get_Future_Time();
-stopwater = (future + TimeSpan(0,0,0,10));
+stopwater = (future + TimeSpan(0,0,0,5));
 }
 
 void loop () 
@@ -91,12 +93,28 @@ End of code for the RTC Unit */
   (now.minute() == future.minute()) && (now.second() == future.second()) )
   {
   Water_On();
+  Serial.println("stuck here");
   }
   else if((now.year() == stopwater.year()) && (now.month() == stopwater.month()) &&
     (now.day() == stopwater.day()) && (now.hour() == stopwater.hour()) && 
     (now.minute() == stopwater.minute()) && (now.second() == stopwater.second()))
   {
   Water_Off();
+  }
+
+  while(OnOff_LED = true)
+  {
+    digitalWrite(LED_1, HIGH); 
+    delay(500); 
+    digitalWrite(LED_1, LOW);
+    delay(500);
+  }
+  while(OnOff_LED = false)
+  {
+    digitalWrite(LED_1, HIGH); 
+    delay(1000); 
+    digitalWrite(LED_1, LOW);
+    delay(1000);
   }
 /* End code for Relay */
 
@@ -105,7 +123,7 @@ End of code for the RTC Unit */
 DateTime Get_Future_Time() //  Funtion to grab future time 3 days
 {
     DateTime now = rtc.now();
-    DateTime future (now + TimeSpan(0,0,0,10));
+    DateTime future (now + TimeSpan(0,0,1,0));
     Serial.println("Message: Future time grabbed");
     Serial.print(future.year(), DEC);
     Serial.print('/');
@@ -125,9 +143,10 @@ DateTime Get_Future_Time() //  Funtion to grab future time 3 days
 
 void Water_On() // check current time against future time
 {
-    DateTime now = rtc.now();
+    Serial.println();
     Serial.println("Message: Water pump on");
     digitalWrite(RELAY_1,1);
+    OnOff = true;
 }
 
 void Water_Off() // checks current time against stop time
@@ -138,5 +157,6 @@ void Water_Off() // checks current time against stop time
     future = Get_Future_Time();
     Serial.println();
     Serial.println("Message: Seting new stopwater time");
-    stopwater = (future + TimeSpan(0,0,0,10));
+    stopwater = (future + TimeSpan(0,0,0,5));
+    OnOff = false;
 }
