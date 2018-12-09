@@ -63,7 +63,7 @@ void loop ()
 DateTime Get_Future_Time() //  Funtion to grab future time 3 days
 {
     DateTime now = rtc.now();
-    DateTime future (now + TimeSpan(3,0,0,0)); // 3 days
+    DateTime future (now + TimeSpan(0,0,0,30)); // 3 days
     Serial.println("Message: Future time grabbed");
     Serial.print(future.year(), DEC);
     Serial.print('/');
@@ -92,7 +92,7 @@ void Water_On() // check current time against future time
     digitalWrite(RELAY_1,1);
     Serial.println("Message: Water pump on");
     //OnOff = true;
-    Water_On_LED();
+    //Water_On_LED();
   }
 }
 
