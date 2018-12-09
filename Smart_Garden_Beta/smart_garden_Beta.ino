@@ -23,9 +23,8 @@ RTC_PCF8523 rtc;
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 DateTime future;
 DateTime stopwater;
-//bool OnOff = false;
 
-void setup () 
+void setup () // this code only happens once
 {
   /* Code for the RTC Unit */
   Serial.begin(57600);
@@ -35,9 +34,13 @@ void setup ()
     while (1);
   }
 
-  if (! rtc.initialized()) 
+  if (! rtc.initialized()) // If RTC is no running
   {
     Serial.println("RTC is NOT running!");
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // try to adjust time anyways
+  }
+  else // if RTC is running
+  {
     // following line sets the RTC to the date & time this sketch was compiled
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
@@ -63,7 +66,7 @@ void loop ()
 DateTime Get_Future_Time() //  Funtion to grab future time 3 days
 {
     DateTime now = rtc.now();
-    DateTime future (now + TimeSpan(0,0,0,30)); // 3 days
+    DateTime future (now + TimeSpan(0,0,0,16)); // 3 days
     Serial.println("Message: Future time grabbed");
     Serial.print(future.year(), DEC);
     Serial.print('/');
@@ -82,7 +85,7 @@ DateTime Get_Future_Time() //  Funtion to grab future time 3 days
     return future;
 }
 
-void Water_On() // check current time against future time
+bool Water_On() // check current time against future time
 {
   DateTime now = rtc.now();
   if( (now.year() == future.year()) && (now.month() == future.month()) &&
@@ -91,12 +94,14 @@ void Water_On() // check current time against future time
   {
     digitalWrite(RELAY_1,1);
     Serial.println("Message: Water pump on");
-    //OnOff = true;
-    //Water_On_LED();
+    Water_On_LED();
+    return true;
   }
+  else
+    return false;
 }
 
-void Water_Off() // checks current time against stop time
+bool Water_Off() // checks current time against stop time
 {
   DateTime now = rtc.now();
   if((now.year() == stopwater.year()) && (now.month() == stopwater.month()) &&
@@ -123,23 +128,22 @@ void Water_Off() // checks current time against stop time
     Serial.print(':');
     Serial.print(stopwater.second(), DEC);
     Serial.println();
-    //OnOff = false;
+    return true; // true: yes this process happened
   }
+  else
+    return false; // False: no to this process didn't happen
 }
 
 void Water_On_LED()
 {
     // blink for water on
-    digitalWrite(LED_1, HIGH);
-    delay(100);                      
-    digitalWrite(LED_1, LOW);
-    delay(100);
-    digitalWrite(LED_1, HIGH);
-    delay(100);                    
-    digitalWrite(LED_1, LOW); 
-    delay(100);                       
-    digitalWrite(LED_1, HIGH);  
-    delay(1000);                       
-    digitalWrite(LED_1, LOW);  
-    delay(1000);
+    int numblink = 0;
+    while(numblink < 15) // each blink is 1 second
+    {
+      digitalWrite(LED_1, HIGH);
+      delay(500);                      
+      digitalWrite(LED_1, LOW);
+      delay(500);
+      numblink++;
+    }
 }
