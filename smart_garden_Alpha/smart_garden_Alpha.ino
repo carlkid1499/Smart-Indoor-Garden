@@ -1,7 +1,8 @@
 /* Smart Garden Project
  * 1 Relay Switch to control pumop
  * RTC added on to keep track of time 
- * DIO 1: Push Button DIO 2: Relay, DIO 3: LED 
+ * DIO 5: Relay 1 DIO 2: Relay 2, DIO 3: LED 
+ * Note DIO pins 0,1 are bad on shield
  */
 
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
@@ -16,8 +17,8 @@
 RTC_PCF8523 rtc;
 
 // use #define to set the I/O numbers, since these will never change - this saves us memory while the Arduino is running
-#define BUTTON_1 1
-#define RELAY_1  2
+#define RELAY_1 5
+#define RELAY_2  2
 #define LED_1 3
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -47,17 +48,18 @@ void setup ()
   stopwater = (future + TimeSpan(0,0,0,15)); // set water time
 
   /* Code for relay switch, pump,button, and LED */
-  pinMode(LED_1, OUTPUT);
-  pinMode(BUTTON_1, INPUT);          
-  pinMode(RELAY_1, OUTPUT);   
+  pinMode(LED_1,OUTPUT);
+  pinMode(RELAY_1,OUTPUT);          
+  pinMode(RELAY_2,OUTPUT);   
   /* End of code for relay switch, pump,button, and LED */ 
 
 }
 
 void loop () 
 {
-  Water_On();
-  Water_Off();
+  
+  //Water_On();
+  //Water_Off();
 }
 
 DateTime Get_Future_Time() //  Funtion to grab future time 3 days
@@ -89,7 +91,7 @@ void Water_On() // check current time against future time
   (now.day() == future.day()) && (now.hour() == future.hour()) && 
   (now.minute() == future.minute()) && (now.second() == future.second()) )
   {
-    digitalWrite(RELAY_1,1);
+    digitalWrite(RELAY_2,1);
     Serial.println("Message: Water pump on");
     //OnOff = true;
     Water_On_LED();
@@ -103,7 +105,7 @@ void Water_Off() // checks current time against stop time
     (now.day() == stopwater.day()) && (now.hour() == stopwater.hour()) && 
     (now.minute() == stopwater.minute()) && (now.second() == stopwater.second()))
   {
-    digitalWrite(RELAY_1,0);
+    digitalWrite(RELAY_2,0);
     Serial.println("Message: Water pump off");
     Serial.println("Message: Setting new future time");
     future = Get_Future_Time();
