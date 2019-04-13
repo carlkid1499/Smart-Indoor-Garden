@@ -103,7 +103,7 @@ void loop ()
     Serial.print(now.second(), DEC);
     // blink for water on
     int numblink = 0;
-    while (numblink < 20) // each blink is 1 second
+    while (numblink < 15) // each blink is 1 second
     {
       digitalWrite(LED_1, HIGH);
       delay(500);
