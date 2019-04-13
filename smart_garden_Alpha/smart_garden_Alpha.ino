@@ -1,5 +1,5 @@
 /* Smart Garden Project
- * 1 Relay Switch to control pumop
+ * 1 Relay Switch to control pump
  * RTC added on to keep track of time 
  * DIO 5: Relay 1 DIO 2: Relay 2, DIO 3: LED 
  * Note DIO pins 0,1 are bad on shield
@@ -57,9 +57,7 @@ void setup ()
 
 void loop () 
 {
-  
-  //Water_On();
-  //Water_Off();
+ 
 }
 
 DateTime Get_Future_Time() //  Funtion to grab future time 3 days
