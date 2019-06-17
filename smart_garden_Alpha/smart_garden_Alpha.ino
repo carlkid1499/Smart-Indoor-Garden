@@ -21,10 +21,6 @@ RTC_PCF8523 rtc;
 #define LED_1 3
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-DateTime now = rtc.now();
-int Light_Time = now.unixtime();
-int Water_Time = now.unixtime();
-DateTime rebootime;
 
 void setup () // this code only happens once
 {
@@ -54,19 +50,76 @@ void setup () // this code only happens once
   pinMode(Relay_Water, OUTPUT);
   /* End of code for relay switch, pump,button, and LED */
 
-  rebootime = rtc.now(); // grabs the time upon which the arduino reboots
 }
 
 void loop ()
 {
-  DateTime current = rtc.now();
-  if (current.hour() > 7 && current.hour() < 9) /* inbetween 7 am and 9 am turn on for X hours */
+  DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
+
+  // Let's try using some switch statements to determine water and light times
+  switch (CurrTime.daysOfTheWeek())
   {
-    digitalWrite(Relay_Light,HIGH);
-  }
-  else
-  {
-    digitalWrite(Relay_Light,LOW);
-  }
-  
+    // case for each day of the week. Turn growlights on each day and water every three days
+    case Sunday:
+      switch (CurrTime.hour())
+      {
+        case 7: // hour of day to do something
+          digitalWrite(Relay_Light, HIGH); // lights on buddy
+        case 8:
+          digitalWrite(Relay_Water, High); // water on
+          delay(10000); // wait for 10 seconds
+          digitalWrite(Relay_Water, LOW); // water off
+        case 13: // hour of day to do something
+          digitalWrite(Relay_Light, LOW); // lights off buddy
+      }
+    case Monday:
+      switch (CurrTime.hour())
+      {
+        case 7:
+          digitalWrite(Relay_Light, HIGH); 
+        case 013: 
+          digitalWrite(Relay_Light, LOW); 
+      }
+    case Tuesday:
+      switch (CurrTime.hour())
+      {
+        case 7: 
+          digitalWrite(Relay_Light, HIGH); 
+        case 13:
+          digitalWrite(Relay_Light, LOW); 
+      }
+    case Wednesday:
+      switch (CurrTime.hour())
+      {
+        case 7:
+          digitalWrite(Relay_Light, HIGH); 
+        case 13:
+          digitalWrite(Relay_Light, LOW);
+      }
+    case Thursday:
+      switch (CurrTime.hour())
+      {
+        case 7:
+          digitalWrite(Relay_Light, HIGH); 
+        case 13:
+          digitalWrite(Relay_Light, LOW); 
+      }
+    case Friday:
+     switch (CurrTime.hour())
+      {
+        case 7:
+          digitalWrite(Relay_Light, HIGH);
+        case 13:
+          digitalWrite(Relay_Light, LOW);
+      }
+    case Saturday:
+      switch (CurrTime.hour())
+      {
+        case 7:
+          digitalWrite(Relay_Light, HIGH);
+        case 13:
+          digitalWrite(Relay_Light, LOW);
+      }
+    
+  }  
 }
