@@ -50,6 +50,8 @@ void setup () // this code only happens once
   pinMode(Relay_Water, OUTPUT);
   /* End of code for relay switch, pump,button, and LED */
 
+  digitalWrite(Relay_Light,LOW);
+  digitalWrite(Relay_Water,LOW);
 }
 
 void loop ()
@@ -57,10 +59,10 @@ void loop ()
   DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
 
   // Let's try using some switch statements to determine water and light times
-  switch (CurrTime.daysOfTheWeek())
+  switch (CurrTime.dayOfTheWeek())
   {
     // case for each day of the week. Turn growlights on each day and water every three days
-    case Sunday:
+    case 'Sunday':
       switch (CurrTime.hour())
       {
         case 7: // hour of day to do something
@@ -82,7 +84,7 @@ void loop ()
           Serial.println("----- End of Message -----");
 
         case 8:
-          digitalWrite(Relay_Water, High); // water on
+          digitalWrite(Relay_Water, HIGH); // water on
           Serial.println("----- Message: Water On -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
@@ -134,7 +136,7 @@ void loop ()
           Serial.print(CurrTime.second(), DEC);
           Serial.println("----- End of Message -----");
       }
-    case Monday:
+    case 'Monday':
       switch (CurrTime.hour())
       {
         case 7:
@@ -173,7 +175,7 @@ void loop ()
           Serial.print(CurrTime.second(), DEC);
           Serial.println("----- End of Message -----"); 
       }
-    case Tuesday:
+    case 'Tuesday':
       switch (CurrTime.hour())
       {
         case 7: 
@@ -195,7 +197,7 @@ void loop ()
           Serial.println("----- End of Message -----");
 
         case 8:
-          digitalWrite(Relay_Water, High); // water on
+          digitalWrite(Relay_Water, HIGH); // water on
           Serial.println("----- Message: Water On -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
@@ -247,7 +249,7 @@ void loop ()
           Serial.print(CurrTime.second(), DEC);
           Serial.println("----- End of Message -----"); 
       }
-    case Wednesday:
+    case 'Wednesday':
       switch (CurrTime.hour())
       {
         case 7: 
@@ -286,7 +288,7 @@ void loop ()
           Serial.print(CurrTime.second(), DEC);
           Serial.println("----- End of Message -----");
       }
-    case Thursday:
+    case 'Thursday':
       switch (CurrTime.hour())
       {
         case 7: 
@@ -308,7 +310,7 @@ void loop ()
           Serial.println("----- End of Message -----");
 
           case 8:
-          digitalWrite(Relay_Water, High); // water on
+          digitalWrite(Relay_Water, HIGH); // water on
           Serial.println("----- Message: Water On -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
@@ -360,7 +362,7 @@ void loop ()
           Serial.print(CurrTime.second(), DEC);
           Serial.println("----- End of Message -----"); 
       }
-    case Friday:
+    case 'Friday':
      switch (CurrTime.hour())
       {
         case 7: 
@@ -399,7 +401,7 @@ void loop ()
           Serial.print(CurrTime.second(), DEC);
           Serial.println("----- End of Message -----");
       }
-    case Saturday:
+    case 'Saturday':
       switch (CurrTime.hour())
       {
         case 7: 
