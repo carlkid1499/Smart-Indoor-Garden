@@ -20,6 +20,8 @@ RTC_PCF8523 rtc;
 #define Relay_Water 2
 #define LED_1 3
 
+bool Lights = false;
+
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 void setup () // this code only happens once
@@ -50,15 +52,12 @@ void setup () // this code only happens once
   pinMode(Relay_Water, OUTPUT);
   /* End of code for relay switch, pump,button, and LED */
 
-  digitalWrite(Relay_Light,LOW);
-  digitalWrite(Relay_Water,LOW);
+  Lights = false;
 }
 
 void loop ()
 {
   DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
-
-
   // Print out Date for troubleshooting and logs 
     Serial.print(CurrTime.year(), DEC);
     Serial.print('/');
@@ -85,14 +84,20 @@ void loop ()
     delay(5000);
 
 
-    
-  // End of troubelshooting and logs  
 
+  if(Lights == true)
+    digitalWrite(Relay_Light, HIGH);
+  else if(Lights == false)
+    digitalWrite(Relay_Light, LOW);
+  else
+    digitalWrite(Relay_Light, LOW);
+
+    
   // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
   {
     // case for each day of the week. Turn growlights on each day at 7:01 am and water every three days
-    case 7:
+    case 0:
       switch (CurrTime.hour())
       {
         case 7: // hour of day to do something
@@ -115,7 +120,7 @@ void loop ()
               Serial.print(CurrTime.second(), DEC);
               Serial.println();
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, HIGH);
+              Lights = true;
               break;
           }
             break;
@@ -174,7 +179,7 @@ void loop ()
               Serial.print(':');
               Serial.print(CurrTime.second(), DEC);
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, LOW);
+              Lights = false;
               break;
           }
         break;
@@ -202,7 +207,7 @@ void loop ()
               Serial.print(CurrTime.second(), DEC);
               Serial.println();
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, HIGH);
+              Lights = true;
               break;
           }
             break;
@@ -226,7 +231,7 @@ void loop ()
               Serial.print(':');
               Serial.print(CurrTime.second(), DEC);
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, LOW);
+              Lights = false;
               break;
           }
        break;   
@@ -254,7 +259,7 @@ void loop ()
               Serial.print(CurrTime.second(), DEC);
               Serial.println();
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, HIGH);
+              Lights = true;
               break;
           }
             break;
@@ -313,7 +318,7 @@ void loop ()
               Serial.print(':');
               Serial.print(CurrTime.second(), DEC);
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, LOW);
+              Lights = false;
               break;
           }
        break; 
@@ -341,7 +346,7 @@ void loop ()
               Serial.print(CurrTime.second(), DEC);
               Serial.println();
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, HIGH);
+              Lights = true;
               break;
           }
             break;
@@ -365,7 +370,7 @@ void loop ()
               Serial.print(':');
               Serial.print(CurrTime.second(), DEC);
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, LOW);
+              Lights = false;
               break;
           }
         break;
@@ -393,7 +398,7 @@ void loop ()
               Serial.print(CurrTime.second(), DEC);
               Serial.println();
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, HIGH);
+              Lights = true;
               break;
           }
         break;
@@ -452,7 +457,7 @@ void loop ()
               Serial.print(':');
               Serial.print(CurrTime.second(), DEC);
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, LOW);
+              Lights = false;
               break;
           }
        break; 
@@ -480,7 +485,7 @@ void loop ()
               Serial.print(CurrTime.second(), DEC);
               Serial.println();
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, HIGH);
+              Lights = true;
               break;
           }
         break; // break for 7
@@ -504,7 +509,7 @@ void loop ()
               Serial.print(':');
               Serial.print(CurrTime.second(), DEC);
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, LOW);
+              Lights = false;
               break;
           }
        break; // break for 13
@@ -532,7 +537,7 @@ void loop ()
               Serial.print(CurrTime.second(), DEC);
               Serial.println();
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, HIGH);
+              Lights = true;
               break;
           }
             break;
@@ -557,7 +562,7 @@ void loop ()
               Serial.print(':');
               Serial.print(CurrTime.second(), DEC);
               Serial.println("----- End of Message -----");
-              digitalWrite(Relay_Light, LOW);
+              Lights = false;
               break;
           }
        break;  
