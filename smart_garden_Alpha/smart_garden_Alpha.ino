@@ -21,20 +21,22 @@ RTC_PCF8523 rtc;
 #define LED_1 3
 
 bool Lights = false;
+bool Water = false;
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
-void setup () // this code only happens once
+void setup() // this code only happens once
 {
   /* Code for the RTC Unit */
   Serial.begin(57600);
-  if (! rtc.begin())
+  if (!rtc.begin())
   {
     Serial.println("Couldn't find RTC");
-    while (1);
+    while (1)
+      ;
   }
 
-  if (! rtc.initialized()) // If RTC is no running
+  if (!rtc.initialized()) // If RTC is no running
   {
     Serial.println("RTC is NOT running!");
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // try to adjust time anyways
@@ -53,80 +55,209 @@ void setup () // this code only happens once
   /* End of code for relay switch, pump,button, and LED */
 
   Lights = false;
+  Water = false;
 }
 
-void loop ()
+void loop()
 {
   DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
-  // Print out Date for troubleshooting and logs 
-    Serial.print(CurrTime.year(), DEC);
-    Serial.print('/');
-    Serial.print(CurrTime.month(), DEC);
-    Serial.print('/');
-    Serial.print(CurrTime.day(), DEC);
-    Serial.print(" (");
-    Serial.print(CurrTime.dayOfTheWeek()); // days of week in integer form
-    Serial.print(") ");
-    Serial.print(CurrTime.hour(), DEC);
-    Serial.print(':');
-    Serial.print(CurrTime.minute(), DEC);
-    Serial.print(':');
-    Serial.print(CurrTime.second(), DEC);
-    Serial.println();
-    
-    Serial.print("time since midnight 1/1/1970 = ");
-    Serial.print(CurrTime.unixtime());
-    Serial.print("s = ");
-    Serial.print(CurrTime.unixtime() / 86400L);
-    Serial.println("d");
-    
-    Serial.println();
-    delay(5000);
+                                 // Print out Date for troubleshooting and logs
+  Serial.print(CurrTime.year(), DEC);
+  Serial.print('/');
+  Serial.print(CurrTime.month(), DEC);
+  Serial.print('/');
+  Serial.print(CurrTime.day(), DEC);
+  Serial.print(" (");
+  Serial.print(CurrTime.dayOfTheWeek()); // days of week in integer form
+  Serial.print(") ");
+  Serial.print(CurrTime.hour(), DEC);
+  Serial.print(':');
+  Serial.print(CurrTime.minute(), DEC);
+  Serial.print(':');
+  Serial.print(CurrTime.second(), DEC);
+  Serial.println();
 
+  Serial.print("time since midnight 1/1/1970 = ");
+  Serial.print(CurrTime.unixtime());
+  Serial.print("s = ");
+  Serial.print(CurrTime.unixtime() / 86400L);
+  Serial.println("d");
 
+  Serial.println();
+  delay(5000); // wait 5 seconds
 
-  if(Lights == true)
+  /* Check for Light Bool */
+  if (Lights == true)
     digitalWrite(Relay_Light, HIGH);
-  else if(Lights == false)
-    digitalWrite(Relay_Light, LOW);
   else
-    digitalWrite(Relay_Light, LOW);
+    digitalWrite(Relay_Light, LOW); // if not true off
+  /* End of check for Light Bool */
 
-    
+  /* Check for Water Bool */
+  if (Water == true)
+    digitalWrite(Relay_Water, HIGH);
+  else
+    digitalWrite(Relay_Water, LOW); // if not true off
+  /* End of check for Water Bool */
+
   // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
   {
-    // case for each day of the week. Turn growlights on each day at 7:01 am and water every three days
-    case 0:
-      switch (CurrTime.hour())
+  // case for each day of the week. Turn growlights on each day at 7:01 am and water every three days
+  case 0: //Sunday
+    switch (CurrTime.hour())
+    {
+    case 7: // 7 am
+      switch (CurrTime.minute())
       {
-        case 7: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights On -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println();
-              Serial.println("----- End of Message -----");
-              Lights = true;
-              break;
-          }
-            break;
-          
-        /* case 8:
-          digitalWrite(Relay_Water, HIGH); // water on
+      case 1: // 7:01 am
+        Serial.println("----- Message: Grow Lights On -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println();
+        Serial.println("----- End of Message -----");
+        Lights = true;
+        break;
+
+      case 30: // 7:30 am
+        Serial.println("----- Message: Water On -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println();
+        Serial.println("----- End of Message -----");
+        Water = true;
+        break;
+      }
+      break;
+
+    case 13: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        Serial.println("----- Message: Grow Lights Off -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println("----- End of Message -----");
+        Lights = false;
+        break;
+      }
+      break;
+    }
+  case 1:
+    switch (CurrTime.hour())
+    {
+    case 7: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        Serial.println("----- Message: Grow Lights On -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println();
+        Serial.println("----- End of Message -----");
+        Lights = true;
+        break;
+      }
+      break;
+
+    case 13: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        Serial.println("----- Message: Grow Lights Off -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println("----- End of Message -----");
+        Lights = false;
+        break;
+      }
+      break;
+    }
+  case 2:
+    switch (CurrTime.hour())
+    {
+    case 7: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        Serial.println("----- Message: Grow Lights On -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println();
+        Serial.println("----- End of Message -----");
+        Lights = true;
+        break;
+
+      case 30:
+        switch (CurrTime.second())
+        {
+        case 1: // 7:30:01 am
           Serial.println("----- Message: Water On -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
@@ -141,10 +272,13 @@ void loop ()
           Serial.print(CurrTime.minute(), DEC);
           Serial.print(':');
           Serial.print(CurrTime.second(), DEC);
+          Serial.println();
           Serial.println("----- End of Message -----");
-          delay(10000); // wait for 10 seconds
-          digitalWrite(Relay_Water, LOW); // water off
-          Serial.println("----- Message: water off -----");
+          Water = true;
+          break;
+
+        case 10: // 7:30:10 am
+          Serial.println("----- Message: Water Off -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
           Serial.print(CurrTime.month(), DEC);
@@ -158,114 +292,120 @@ void loop ()
           Serial.print(CurrTime.minute(), DEC);
           Serial.print(':');
           Serial.print(CurrTime.second(), DEC);
-          Serial.println("----- End of Message -----"); */
+          Serial.println();
+          Serial.println("----- End of Message -----");
+          Water = false;
+          break;
+        }
+      }
+      break;
 
-        case 13: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights Off -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println("----- End of Message -----");
-              Lights = false;
-              break;
-          }
+    case 13: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        Serial.println("----- Message: Grow Lights Off -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println("----- End of Message -----");
+        Lights = false;
         break;
       }
-    case 1:
-      switch (CurrTime.hour())
+      break;
+    }
+  case 3:
+    switch (CurrTime.hour())
+    {
+    case 7: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 7: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights On -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println();
-              Serial.println("----- End of Message -----");
-              Lights = true;
-              break;
-          }
-            break;
-
-        case 13: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights Off -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println("----- End of Message -----");
-              Lights = false;
-              break;
-          }
-       break;   
+      case 1:
+        Serial.println("----- Message: Grow Lights On -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println();
+        Serial.println("----- End of Message -----");
+        Lights = true;
+        break;
       }
-    case 2:
-      switch (CurrTime.hour())
-      {
-        case 7: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights On -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println();
-              Serial.println("----- End of Message -----");
-              Lights = true;
-              break;
-          }
-            break;
+      break;
 
-        /* case 8:
-          digitalWrite(Relay_Water, HIGH); // water on
+    case 13: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        Serial.println("----- Message: Grow Lights Off -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println("----- End of Message -----");
+        Lights = false;
+        break;
+      }
+      break;
+    }
+  case 4:
+    switch (CurrTime.hour())
+    {
+    case 7: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        Serial.println("----- Message: Grow Lights On -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println();
+        Serial.println("----- End of Message -----");
+        Lights = true;
+        break;
+
+      case 30:
+        switch (CurrTime.second())
+        {
+        case 1: // 7:30:01 am
           Serial.println("----- Message: Water On -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
@@ -280,10 +420,13 @@ void loop ()
           Serial.print(CurrTime.minute(), DEC);
           Serial.print(':');
           Serial.print(CurrTime.second(), DEC);
+          Serial.println();
           Serial.println("----- End of Message -----");
-          delay(10000); // wait for 10 seconds
-          digitalWrite(Relay_Water, LOW); // water off
-          Serial.println("----- Message: water off -----");
+          Water = true;
+          break;
+
+        case 10: // 7:30:10 am
+          Serial.println("----- Message: Water Off -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
           Serial.print(CurrTime.month(), DEC);
@@ -297,275 +440,141 @@ void loop ()
           Serial.print(CurrTime.minute(), DEC);
           Serial.print(':');
           Serial.print(CurrTime.second(), DEC);
-          Serial.println("----- End of Message -----");*/
-
-        case 13: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights Off -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println("----- End of Message -----");
-              Lights = false;
-              break;
-          }
-       break; 
+          Serial.println();
+          Serial.println("----- End of Message -----");
+          Water = false;
+          break;
+        }
       }
-    case 3:
-      switch (CurrTime.hour())
-      {
-        case 7: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights On -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println();
-              Serial.println("----- End of Message -----");
-              Lights = true;
-              break;
-          }
-            break;
+      break;
 
-        case 13: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights Off -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println("----- End of Message -----");
-              Lights = false;
-              break;
-          }
+    case 13: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        Serial.println("----- Message: Grow Lights Off -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println("----- End of Message -----");
+        Lights = false;
         break;
       }
-    case 4:
-      switch (CurrTime.hour())
+      break;
+    }
+  case 5:
+    switch (CurrTime.hour())
+    {
+    case 7: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 7: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights On -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println();
-              Serial.println("----- End of Message -----");
-              Lights = true;
-              break;
-          }
+      case 1:
+        Serial.println("----- Message: Grow Lights On -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println();
+        Serial.println("----- End of Message -----");
+        Lights = true;
         break;
-
-          /* case 8:
-          digitalWrite(Relay_Water, HIGH); // water on
-          Serial.println("----- Message: Water On -----");
-          Serial.print(CurrTime.year(), DEC);
-          Serial.print('/');
-          Serial.print(CurrTime.month(), DEC);
-          Serial.print('/');
-          Serial.print(CurrTime.day(), DEC);
-          Serial.print(" (");
-          Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-          Serial.print(") ");
-          Serial.print(CurrTime.hour(), DEC);
-          Serial.print(':');
-          Serial.print(CurrTime.minute(), DEC);
-          Serial.print(':');
-          Serial.print(CurrTime.second(), DEC);
-          Serial.println("----- End of Message -----");
-          delay(10000); // wait for 10 seconds
-          digitalWrite(Relay_Water, LOW); // water off
-          Serial.println("----- Message: water off -----");
-          Serial.print(CurrTime.year(), DEC);
-          Serial.print('/');
-          Serial.print(CurrTime.month(), DEC);
-          Serial.print('/');
-          Serial.print(CurrTime.day(), DEC);
-          Serial.print(" (");
-          Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-          Serial.print(") ");
-          Serial.print(CurrTime.hour(), DEC);
-          Serial.print(':');
-          Serial.print(CurrTime.minute(), DEC);
-          Serial.print(':');
-          Serial.print(CurrTime.second(), DEC);
-          Serial.println("----- End of Message -----"); */
-          
-        case 13: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights Off -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println("----- End of Message -----");
-              Lights = false;
-              break;
-          }
-       break; 
       }
-    case 5:
-     switch (CurrTime.hour())
+      break; // break for 7
+
+    case 13: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 7: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights On -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println();
-              Serial.println("----- End of Message -----");
-              Lights = true;
-              break;
-          }
-        break; // break for 7
-
-        case 13: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights Off -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println("----- End of Message -----");
-              Lights = false;
-              break;
-          }
-       break; // break for 13
+      case 1:
+        Serial.println("----- Message: Grow Lights Off -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println("----- End of Message -----");
+        Lights = false;
+        break;
       }
-    case 6:
-      switch (CurrTime.hour())
+      break; // break for 13
+    }
+  case 6:
+    switch (CurrTime.hour())
+    {
+    case 7: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 7: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights On -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println();
-              Serial.println("----- End of Message -----");
-              Lights = true;
-              break;
-          }
-            break;
-          
-
-        case 13: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              Serial.println("----- Message: Grow Lights Off -----");
-              Serial.print(CurrTime.year(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.month(), DEC);
-              Serial.print('/');
-              Serial.print(CurrTime.day(), DEC);
-              Serial.print(" (");
-              Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              Serial.print(") ");
-              Serial.print(CurrTime.hour(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.minute(), DEC);
-              Serial.print(':');
-              Serial.print(CurrTime.second(), DEC);
-              Serial.println("----- End of Message -----");
-              Lights = false;
-              break;
-          }
-       break;  
+      case 1:
+        Serial.println("----- Message: Grow Lights On -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println();
+        Serial.println("----- End of Message -----");
+        Lights = true;
+        break;
       }
-  }  
+      break;
+
+    case 13: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        Serial.println("----- Message: Grow Lights Off -----");
+        Serial.print(CurrTime.year(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.month(), DEC);
+        Serial.print('/');
+        Serial.print(CurrTime.day(), DEC);
+        Serial.print(" (");
+        Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+        Serial.print(") ");
+        Serial.print(CurrTime.hour(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.minute(), DEC);
+        Serial.print(':');
+        Serial.print(CurrTime.second(), DEC);
+        Serial.println("----- End of Message -----");
+        Lights = false;
+        break;
+      }
+      break;
+    }
+  }
 }
