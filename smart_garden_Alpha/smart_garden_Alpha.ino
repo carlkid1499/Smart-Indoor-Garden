@@ -61,7 +61,7 @@ void setup() // this code only happens once
 void loop()
 {
   DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
-                                 // Print out Date for troubleshooting and logs
+  /* Print out Date for troubleshooting and logs */
   Serial.print(CurrTime.year(), DEC);
   Serial.print('/');
   Serial.print(CurrTime.month(), DEC);
@@ -84,7 +84,6 @@ void loop()
   Serial.println("d");
 
   Serial.println();
-  delay(5000); // wait 5 seconds
 
   /* Check for Light Bool */
   if (Lights == true)
@@ -103,7 +102,9 @@ void loop()
   // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
   {
-  // case for each day of the week. Turn growlights on each day at 7:01 am and water every three days
+    // case for each day of the week. Turn growlights on each day at 7:01 am and water every three days
+
+    /* ----- Sunday Schedule Begins Here ----- */
   case 0: //Sunday
     switch (CurrTime.hour())
     {
@@ -176,6 +177,9 @@ void loop()
       }
       break;
     }
+    /* ----- Sunday Schedule Begins Ends Here ----- */
+
+    /* ----- Monday Schedule Begins Here ----- */
   case 1:
     switch (CurrTime.hour())
     {
@@ -228,6 +232,9 @@ void loop()
       }
       break;
     }
+    /* ----- Monday Schedule Begins Ends Here ----- */
+
+    /* ----- Tuesday Schedule Begins Here ----- */
   case 2:
     switch (CurrTime.hour())
     {
@@ -324,6 +331,9 @@ void loop()
       }
       break;
     }
+  /* ----- Tuesday Schedule Begins Ends Here ----- */
+
+  /* ----- Wednesday Schedule Begins Here ----- */
   case 3:
     switch (CurrTime.hour())
     {
@@ -376,6 +386,9 @@ void loop()
       }
       break;
     }
+  /* ----- Wednesday Schedule Begins Ends Here ----- */
+
+  /* ----- Thursday Schedule Begins Here ----- */
   case 4:
     switch (CurrTime.hour())
     {
@@ -472,6 +485,9 @@ void loop()
       }
       break;
     }
+    /* ----- Thursday Schedule Begins Ends Here ----- */
+
+    /* ----- Friday Schedule Begins Here ----- */
   case 5:
     switch (CurrTime.hour())
     {
@@ -524,6 +540,9 @@ void loop()
       }
       break; // break for 13
     }
+    /* ----- Friday Schedule Begins Ends Here ----- */
+
+    /* ----- Saturday Schedule Begins Here ----- */
   case 6:
     switch (CurrTime.hour())
     {
@@ -576,5 +595,6 @@ void loop()
       }
       break;
     }
+    /* ----- Saturday Schedule Begins Ends Here ----- */
   }
 }
