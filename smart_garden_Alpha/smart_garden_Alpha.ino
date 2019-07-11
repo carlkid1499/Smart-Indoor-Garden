@@ -438,7 +438,7 @@ void loop()
           Water = true;
           break;
 
-        case 10: // 7:30:10 am
+        case 6: // 7:30:6 am
           Serial.println("----- Message: Water Off -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
