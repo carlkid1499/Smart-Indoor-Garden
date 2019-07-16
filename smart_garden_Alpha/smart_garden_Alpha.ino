@@ -86,18 +86,30 @@ void loop()
   Serial.println();
 
   /* Check for Light Bool */
+  Serial.println("----- Message: Grow Lights If-else statement -----");
   if (Lights == true)
+  {
     digitalWrite(Relay_Light, HIGH);
+    digitalWrite(LED_1 , HIGH);
+  }
   else
     digitalWrite(Relay_Light, LOW); // if not true off
   /* End of check for Light Bool */
 
   /* Check for Water Bool */
+  Serial.println("----- Message: Water If-else statement -----");
   if (Water == true)
+  {
     digitalWrite(Relay_Water, HIGH);
+    digitalWrite(LED_1 , HIGH);
+  }
   else
     digitalWrite(Relay_Water, LOW); // if not true off
   /* End of check for Water Bool */
+  Serial.println("----- Message: One second delay -----");
+  delay(1000);
+
+  Serial.println();
 
   // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
