@@ -90,7 +90,7 @@ void loop()
   {
     Serial.println("----- Message: Grow Lights If-else statement -----");
     digitalWrite(Relay_Light, HIGH);
-    digitalWrite(LED_1 , HIGH);
+    digitalWrite(LED_1, HIGH);
   }
   else
     digitalWrite(Relay_Light, LOW); // if not true off
@@ -101,7 +101,7 @@ void loop()
   {
     Serial.println("----- Message: Water If-else statement -----");
     digitalWrite(Relay_Water, HIGH);
-    digitalWrite(LED_1 , HIGH);
+    digitalWrite(LED_1, HIGH);
   }
   else
     digitalWrite(Relay_Water, LOW); // if not true off
@@ -163,9 +163,7 @@ void loop()
           Serial.println();
           Serial.println("----- End of Message -----");
           Water = true;
-          break;
-
-        case 10: // 7:30:10 am
+          delay(10000); //delay 10 secoonds
           Serial.println("----- Message: Water Off -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
@@ -184,7 +182,7 @@ void loop()
           Serial.println("----- End of Message -----");
           Water = false;
           break;
-          }
+        }
       }
       break;
 
@@ -351,7 +349,7 @@ void loop()
         Lights = true;
         break;
 
-        case 30:
+      case 30:
         switch (CurrTime.second())
         {
         case 1: // 7:30:01 am
@@ -372,9 +370,7 @@ void loop()
           Serial.println();
           Serial.println("----- End of Message -----");
           Water = true;
-          break;
-
-        case 10: // 7:30:10 am
+          delay(10000); //delay 10 secoonds
           Serial.println("----- Message: Water Off -----");
           Serial.print(CurrTime.year(), DEC);
           Serial.print('/');
