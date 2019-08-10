@@ -119,8 +119,7 @@ void setup() // this code only happens once
   pinMode(13, OUTPUT);
   pinMode(8, OUTPUT);
   Serial.println("Ready!");
-}
-
+  
 uint8_t i = 0;
 /* ----- End: Setup code for SD Card ----- */
 }
@@ -155,23 +154,25 @@ void loop()
   /* Check for Light Bool */
   if (Lights == true)
   {
-    Serial.println("----- Message: Grow Lights If-else statement -----");
+    logfile.println("----- Message: Grow Lights If-else statement -----");
     digitalWrite(Relay_Light, HIGH);
-    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_1, LOW);
   }
   else
     digitalWrite(Relay_Light, LOW); // if not true off
+    digitalWrite(LED_1, HIGH);
   /* End of check for Light Bool */
 
   /* Check for Water Bool */
   if (Water == true)
   {
-    Serial.println("----- Message: Water If-else statement -----");
+    logfile.println("----- Message: Water If-else statement -----");
     digitalWrite(Relay_Water, HIGH);
-    digitalWrite(LED_1, HIGH);
+    digitalWrite(LED_1, LOW);
   }
   else
     digitalWrite(Relay_Water, LOW); // if not true off
+    digitalWrite(LED_1, HIGH);
   /* End of check for Water Bool */
   Serial.println("----- Message: One second delay -----");
   delay(1000);
