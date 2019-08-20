@@ -164,7 +164,7 @@ void loop()
   /* End of check for Light Bool */
 
   /* Check for Water Bool */
-  if (Water == true)
+  if (Water == true) // Note: 08/10/19 Get a different LED for the water signals.
   {
     logfile.println("----- Message: Water If-else statement -----");
     digitalWrite(Relay_Water, HIGH);
@@ -208,6 +208,7 @@ void loop()
         logfile.println();
         logfile.println("----- End of Message -----");
         Lights = true;
+        logfile.flush();
         break;
 
       case 30:
@@ -249,6 +250,7 @@ void loop()
           logfile.print(CurrTime.second(), DEC);
           logfile.println();
           logfile.println("----- End of Message -----");
+          logfile.flush();
           break;
         }
       }
@@ -274,6 +276,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
         Lights = false;
+        logfile.flush();
         break;
       }
       break;
@@ -305,6 +308,7 @@ void loop()
         logfile.println();
         logfile.println("----- End of Message -----");
         Lights = true;
+        logfile.flush();
         break;
       }
       break;
@@ -329,6 +333,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
         Lights = false;
+        logfile.flush();
         break;
       }
       break;
@@ -360,6 +365,7 @@ void loop()
         logfile.println();
         logfile.println("----- End of Message -----");
         Lights = true;
+        logfile.flush();
         break;
       }
       break;
@@ -384,6 +390,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
         Lights = false;
+        logfile.flush();
         break;
       }
       break;
@@ -415,6 +422,7 @@ void loop()
         logfile.println();
         logfile.println("----- End of Message -----");
         Lights = true;
+        logfile.flush();
         break;
 
       case 30:
@@ -456,6 +464,7 @@ void loop()
           logfile.print(CurrTime.second(), DEC);
           logfile.println();
           logfile.println("----- End of Message -----");
+          logfile.flush();
           break;
         }
       }
@@ -481,6 +490,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
         Lights = false;
+        logfile.flush();
         break;
       }
       break;
@@ -512,6 +522,7 @@ void loop()
         logfile.println();
         logfile.println("----- End of Message -----");
         Lights = true;
+        logfile.flush();
         break;
       }
       break;
@@ -536,6 +547,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
         Lights = false;
+        logfile.flush();
         break;
       }
       break;
@@ -567,6 +579,7 @@ void loop()
         logfile.println();
         logfile.println("----- End of Message -----");
         Lights = true;
+        logfile.flush();
         break;
       }
       break; // break for 7
@@ -591,6 +604,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
         Lights = false;
+        logfile.flush();
         break;
       }
       break; // break for 13
@@ -622,6 +636,7 @@ void loop()
         logfile.println();
         logfile.println("----- End of Message -----");
         Lights = true;
+        logfile.flush();
         break;
       }
       break;
@@ -646,6 +661,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
         Lights = false;
+        logfile.flush();
         break;
       }
       break;
