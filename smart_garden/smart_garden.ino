@@ -154,7 +154,7 @@ void loop()
   /* Check for Light Bool */
   if (Lights == true)
   {
-    logfile.println("----- Message: Grow Lights If-else statement -----");
+    Serial.println("----- Message: Grow Lights If-else statement -----");
     digitalWrite(Relay_Light, HIGH);
     digitalWrite(LED_1, LOW);
   }
@@ -166,7 +166,7 @@ void loop()
   /* Check for Water Bool */
   if (Water == true) // Note: 08/10/19 Get a different LED for the water signals.
   {
-    logfile.println("----- Message: Water If-else statement -----");
+    Serial.println("----- Message: Water If-else statement -----");
     digitalWrite(Relay_Water, HIGH);
     digitalWrite(LED_1, LOW);
   }
@@ -232,7 +232,8 @@ void loop()
           logfile.println();
           logfile.println("----- End of Message -----");
           Water = true;
-          delay(10000); //delay 10 secoonds
+          delay(15000); //delay 15 secoonds
+          CurrTime = rtc.now();
           Water = false;
           logfile.println("----- Message: Water Off -----");
           logfile.print(CurrTime.year(), DEC);
@@ -447,6 +448,7 @@ void loop()
           logfile.println("----- End of Message -----");
           Water = true;
           delay(10000); //delay 10 secoonds
+          CurrTime = rtc.now();
           Water = false;
           logfile.println("----- Message: Water Off -----");
           logfile.print(CurrTime.year(), DEC);
