@@ -25,8 +25,6 @@ RTC_PCF8523 rtc;
 #define LED_1 3
 #define cardSelect 10
 
-bool Lights = false;
-bool Water = false;
 File logfile;
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -80,8 +78,10 @@ void setup() // this code only happens once
   pinMode(Relay_Water, OUTPUT);
   /* End of code for relay switch, pump,button, and LED */
 
-  Lights = false;
-  Water = false;
+  /* Set both relays to LOW upon power reset/set up */
+  digitalWrite(Relay_Light, LOW);
+  digitalWrite(Relay_Water, LOW);
+  /* End: Set both relays to LOW upon power reset/set up */
 
   /* ----- Begin: Setup code for SD Card ----- */
   Serial.println("\r\nAnalog logger test");
@@ -151,33 +151,6 @@ void loop()
 
   Serial.println();
 
-  /* Check for Light Bool */
-  if (Lights == true)
-  {
-    Serial.println("----- Message: Grow Lights If-else statement -----");
-    digitalWrite(Relay_Light, HIGH);
-    digitalWrite(LED_1, LOW);
-  }
-  else
-    digitalWrite(Relay_Light, LOW); // if not true off
-    digitalWrite(LED_1, HIGH);
-  /* End of check for Light Bool */
-
-  /* Check for Water Bool */
-  if (Water == true) // Note: 08/10/19 Get a different LED for the water signals.
-  {
-    Serial.println("----- Message: Water If-else statement -----");
-    digitalWrite(Relay_Water, HIGH);
-    digitalWrite(LED_1, LOW);
-  }
-  else
-    digitalWrite(Relay_Water, LOW); // if not true off
-    digitalWrite(LED_1, HIGH);
-  /* End of check for Water Bool */
-  Serial.println("----- Message: One second delay -----");
-  delay(1000);
-  Serial.println();
-
   // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
   {
@@ -207,7 +180,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println();
         logfile.println("----- End of Message -----");
-        Lights = true;
+        digitalWrite(Relay_Light, HIGH);
         logfile.flush();
         break;
 
@@ -231,10 +204,10 @@ void loop()
           logfile.print(CurrTime.second(), DEC);
           logfile.println();
           logfile.println("----- End of Message -----");
-          Water = true;
+          digitalWrite(Relay_Water, HIGH);
           delay(15000); //delay 15 secoonds
           CurrTime = rtc.now();
-          Water = false;
+          digitalWrite(Relay_Water, LOW);
           logfile.println("----- Message: Water Off -----");
           logfile.print(CurrTime.year(), DEC);
           logfile.print('/');
@@ -276,7 +249,7 @@ void loop()
         logfile.print(':');
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
-        Lights = false;
+        digitalWrite(Relay_Light, LOW);
         logfile.flush();
         break;
       }
@@ -308,7 +281,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println();
         logfile.println("----- End of Message -----");
-        Lights = true;
+        digitalWrite(Relay_Light, HIGH);
         logfile.flush();
         break;
       }
@@ -333,7 +306,7 @@ void loop()
         logfile.print(':');
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
-        Lights = false;
+        digitalWrite(Relay_Light, LOW);
         logfile.flush();
         break;
       }
@@ -365,7 +338,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println();
         logfile.println("----- End of Message -----");
-        Lights = true;
+        digitalWrite(Relay_Light, HIGH);
         logfile.flush();
         break;
       }
@@ -390,7 +363,7 @@ void loop()
         logfile.print(':');
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
-        Lights = false;
+        digitalWrite(Relay_Light, LOW);
         logfile.flush();
         break;
       }
@@ -422,7 +395,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println();
         logfile.println("----- End of Message -----");
-        Lights = true;
+        digitalWrite(Relay_Light, HIGH);
         logfile.flush();
         break;
 
@@ -446,10 +419,10 @@ void loop()
           logfile.print(CurrTime.second(), DEC);
           logfile.println();
           logfile.println("----- End of Message -----");
-          Water = true;
+          digitalWrite(Relay_Water, HIGH);
           delay(10000); //delay 10 secoonds
           CurrTime = rtc.now();
-          Water = false;
+          digitalWrite(Relay_Water, LOW);
           logfile.println("----- Message: Water Off -----");
           logfile.print(CurrTime.year(), DEC);
           logfile.print('/');
@@ -491,7 +464,7 @@ void loop()
         logfile.print(':');
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
-        Lights = false;
+        digitalWrite(Relay_Light, LOW);
         logfile.flush();
         break;
       }
@@ -523,7 +496,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println();
         logfile.println("----- End of Message -----");
-        Lights = true;
+        digitalWrite(Relay_Light, HIGH);
         logfile.flush();
         break;
       }
@@ -548,7 +521,7 @@ void loop()
         logfile.print(':');
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
-        Lights = false;
+        digitalWrite(Relay_Light, LOW);
         logfile.flush();
         break;
       }
@@ -580,7 +553,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println();
         logfile.println("----- End of Message -----");
-        Lights = true;
+        digitalWrite(Relay_Light, HIGH);
         logfile.flush();
         break;
       }
@@ -605,7 +578,7 @@ void loop()
         logfile.print(':');
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
-        Lights = false;
+        digitalWrite(Relay_Light, LOW);
         logfile.flush();
         break;
       }
@@ -637,7 +610,7 @@ void loop()
         logfile.print(CurrTime.second(), DEC);
         logfile.println();
         logfile.println("----- End of Message -----");
-        Lights = true;
+        digitalWrite(Relay_Light, HIGH);
         logfile.flush();
         break;
       }
@@ -662,7 +635,7 @@ void loop()
         logfile.print(':');
         logfile.print(CurrTime.second(), DEC);
         logfile.println("----- End of Message -----");
-        Lights = false;
+        digitalWrite(Relay_Light, LOW);
         logfile.flush();
         break;
       }
