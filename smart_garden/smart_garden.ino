@@ -120,37 +120,14 @@ void setup() // this code only happens once
   pinMode(8, OUTPUT);
   Serial.println("Ready!");
   
-uint8_t i = 0;
+  uint8_t i = 0;
 /* ----- End: Setup code for SD Card ----- */
 }
 
 void loop()
 {
   DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
-  /* Print out Date for troubleshooting and logs */
-  Serial.print(CurrTime.year(), DEC);
-  Serial.print('/');
-  Serial.print(CurrTime.month(), DEC);
-  Serial.print('/');
-  Serial.print(CurrTime.day(), DEC);
-  Serial.print(" (");
-  Serial.print(CurrTime.dayOfTheWeek()); // days of week in integer form
-  Serial.print(") ");
-  Serial.print(CurrTime.hour(), DEC);
-  Serial.print(':');
-  Serial.print(CurrTime.minute(), DEC);
-  Serial.print(':');
-  Serial.print(CurrTime.second(), DEC);
-  Serial.println();
-
-  Serial.print("time since midnight 1/1/1970 = ");
-  Serial.print(CurrTime.unixtime());
-  Serial.print("s = ");
-  Serial.print(CurrTime.unixtime() / 86400L);
-  Serial.println("d");
-
-  Serial.println();
-
+  
   // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
   {
