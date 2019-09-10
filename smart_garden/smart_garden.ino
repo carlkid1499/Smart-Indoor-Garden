@@ -134,79 +134,78 @@ void loop()
     // case for each day of the week. Turn growlights on each day at 7:01 am and water every three days
 
     /* ----- Sunday Schedule Begins Here ----- */
-  case 0: //Sunday
-    switch (CurrTime.hour())
-    {
-    case 7: // 7 am
-      switch (CurrTime.minute())
+    case 0: //Sunday
+      switch (CurrTime.hour())
       {
-      case 1: // 7:01 am
-        logfile.println("----- Message: Grow Lights On -----");
-        logfile.print(CurrTime.year(), DEC);
-        logfile.print('/');
-        logfile.print(CurrTime.month(), DEC);
-        logfile.print('/');
-        logfile.print(CurrTime.day(), DEC);
-        logfile.print(" (");
-        logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-        logfile.print(") ");
-        logfile.print(CurrTime.hour(), DEC);
-        logfile.print(':');
-        logfile.print(CurrTime.minute(), DEC);
-        logfile.print(':');
-        logfile.print(CurrTime.second(), DEC);
-        logfile.println();
-        logfile.println("----- End of Message -----");
-        digitalWrite(Relay_Light, HIGH);
-        logfile.flush();
-        break;
-
-      case 30:
-        switch (CurrTime.second())
-        {
-        case 1: // 7:30:01 am
-          logfile.println("----- Message: Water On -----");
-          logfile.print(CurrTime.year(), DEC);
-          logfile.print('/');
-          logfile.print(CurrTime.month(), DEC);
-          logfile.print('/');
-          logfile.print(CurrTime.day(), DEC);
-          logfile.print(" (");
-          logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-          logfile.print(") ");
-          logfile.print(CurrTime.hour(), DEC);
-          logfile.print(':');
-          logfile.print(CurrTime.minute(), DEC);
-          logfile.print(':');
-          logfile.print(CurrTime.second(), DEC);
-          logfile.println();
-          logfile.println("----- End of Message -----");
-          digitalWrite(Relay_Water, HIGH);
-          delay(15000); //delay 15 secoonds
-          CurrTime = rtc.now();
-          digitalWrite(Relay_Water, LOW);
-          logfile.println("----- Message: Water Off -----");
-          logfile.print(CurrTime.year(), DEC);
-          logfile.print('/');
-          logfile.print(CurrTime.month(), DEC);
-          logfile.print('/');
-          logfile.print(CurrTime.day(), DEC);
-          logfile.print(" (");
-          logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-          logfile.print(") ");
-          logfile.print(CurrTime.hour(), DEC);
-          logfile.print(':');
-          logfile.print(CurrTime.minute(), DEC);
-          logfile.print(':');
-          logfile.print(CurrTime.second(), DEC);
-          logfile.println();
-          logfile.println("----- End of Message -----");
-          logfile.flush();
-          break;
+        case 7: // 7 am
+          switch (CurrTime.minute())
+          {
+            case 1: // 7:01 am
+              logfile.println("----- Message: Grow Lights On -----");
+              logfile.print(CurrTime.year(), DEC);
+              logfile.print('/');
+              logfile.print(CurrTime.month(), DEC);
+              logfile.print('/');
+              logfile.print(CurrTime.day(), DEC);
+              logfile.print(" (");
+              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+              logfile.print(") ");
+              logfile.print(CurrTime.hour(), DEC);
+              logfile.print(':');
+              logfile.print(CurrTime.minute(), DEC);
+              logfile.print(':');
+              logfile.print(CurrTime.second(), DEC);
+              logfile.println();
+              logfile.println("----- End of Message -----");
+              digitalWrite(Relay_Light, HIGH);
+              logfile.flush();
+              break; // Sunday Case 1 break
+        case 30:
+          switch (CurrTime.second())
+          {
+              case 1: // 7:30:01 am
+                logfile.println("----- Message: Water On -----");
+                logfile.print(CurrTime.year(), DEC);
+                logfile.print('/');
+                logfile.print(CurrTime.month(), DEC);
+                logfile.print('/');
+                logfile.print(CurrTime.day(), DEC);
+                logfile.print(" (");
+                logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+                logfile.print(") ");
+                logfile.print(CurrTime.hour(), DEC);
+                logfile.print(':');
+                logfile.print(CurrTime.minute(), DEC);
+                logfile.print(':');
+                logfile.print(CurrTime.second(), DEC);
+                logfile.println();
+                logfile.println("----- End of Message -----");
+                digitalWrite(Relay_Water, HIGH);
+                delay(18000); //delay 18 secoonds
+                CurrTime = rtc.now();
+                digitalWrite(Relay_Water, LOW);
+                logfile.println("----- Message: Water Off -----");
+                logfile.print(CurrTime.year(), DEC);
+                logfile.print('/');
+                logfile.print(CurrTime.month(), DEC);
+                logfile.print('/');
+                logfile.print(CurrTime.day(), DEC);
+                logfile.print(" (");
+                logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+                logfile.print(") ");
+                logfile.print(CurrTime.hour(), DEC);
+                logfile.print(':');
+                logfile.print(CurrTime.minute(), DEC);
+                logfile.print(':');
+                logfile.print(CurrTime.second(), DEC);
+                logfile.println();
+                logfile.println("----- End of Message -----");
+                logfile.flush();
+              break;
         }
+      break; // Case 30 Break
       }
-      break;
-
+      
     case 13: // hour of day to do something
       switch (CurrTime.minute())
       {
@@ -229,9 +228,10 @@ void loop()
         digitalWrite(Relay_Light, LOW);
         logfile.flush();
         break;
-      }
+      } 
       break;
     }
+    break;
     /* ----- Sunday Schedule Begins Ends Here ----- */
 
     /* ----- Monday Schedule Begins Here ----- */
