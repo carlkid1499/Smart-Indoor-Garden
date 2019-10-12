@@ -3,6 +3,7 @@
    RTC added on to keep track of time and SD
    DIO 5: Rely_Light) DIO 2: Relay_Water, DIO 3: LED
    DIO 10: SD CardSelect, DIO 11: MOSI,  DIO 12: MISO,  DIO 13: SCLK
+   AIO-0: Photocell
 */
 
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
@@ -12,11 +13,6 @@
 #include <SPI.h>
 #include <SD.h>
 
-#if defined(ARDUINO_ARCH_SAMD)
-// for Zero, output on USB Serial console, remove line below if using programming port to program the Zero!
-#define Serial SerialUSB
-#endif
-
 RTC_PCF8523 rtc;
 
 // use #define to set the I/O numbers, since these will never change - this saves us memory while the Arduino is running
@@ -24,6 +20,8 @@ RTC_PCF8523 rtc;
 #define Relay_Water 2
 #define LED_1 3
 #define cardSelect 10
+int photocellPin = 0; // the cell and 10K pulldown are connected to a0
+int photocellReading; // the analog reading from the analog resistor divider
 
 File logfile;
 
@@ -122,17 +120,75 @@ void setup() // this code only happens once
 
   uint8_t i = 0;
   /* ----- End: Setup code for SD Card ----- */
+
+  /* ----- BEGIN: Initial Message. Power On. ----- */
+  logfile.println("----- Message: System  Power on -----");
+  logfile.print(CurrTime.year(), DEC);
+  logfile.print('/');
+  logfile.print(CurrTime.month(), DEC);
+  logfile.print('/');
+  logfile.print(CurrTime.day(), DEC);
+  logfile.print(" (");
+  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+  logfile.print(") ");
+  logfile.print(CurrTime.hour(), DEC);
+  logfile.print(':');
+  logfile.print(CurrTime.minute(), DEC);
+  logfile.print(':');
+  logfile.print(CurrTime.second(), DEC);
+  logfile.println();
+  logfile.println("----- End of Message -----");
+  logfile.flush();
 }
 
 void loop()
 {
+
   DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
+  // Check the PhotoCell Pin every 30 secounds
+  switch (CurrTime.secound())
+  {
+  case 30:
+    photocellReading = analogRead(photocellPin);
+    logfile.println("----- Message: PhotoCell Reading -----");
+    logfile.print(photocellReading); // the raw analog reading
+
+    // We'll have a few threshholds, qualitatively determined
+    if (photocellReading < 10)
+    {
+      Serial.println(" - Dark");
+      logfile.println("----- End of Message -----");
+    }
+    else if (photocellReading < 200)
+    {
+      Serial.println(" - Dim");
+      logfile.println("----- End of Message -----");
+    }
+    else if (photocellReading < 500)
+    {
+      Serial.println(" - Light");
+      logfile.println("----- End of Message -----");
+    }
+    else if (photocellReading < 800)
+    {
+      Serial.println(" - Bright");
+      logfile.println("----- End of Message -----");
+    }
+    else
+    {
+      Serial.println(" - Very bright");
+      logfile.println("----- End of Message -----");
+    }
+    break;
+
+  default:
+    break;
+  }
 
   // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
   {
   // case for each day of the week. Turn growlights on each day at 7:01 am and water every three days
-
   /* ----- Sunday Schedule Begins Here ----- */
   case 0: //Sunday
     switch (CurrTime.hour())
@@ -624,7 +680,7 @@ void loop()
       }
       break;
     }
-  break;
+    break;
     /* ----- Saturday Schedule Begins Ends Here ----- */
   }
 }
