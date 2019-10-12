@@ -1,7 +1,7 @@
 /* Smart Garden Project
    1 Relay Switch to control pumop
    RTC added on to keep track of time and SD
-   DIO 5: Rely_Light) DIO 2: Relay_Water, DIO 3: LED
+   DIO 5: Rely_Light DIO 2: Relay_Water_1, DIO 3: LED,  DIO 6: Relay_Water_2
    DIO 10: SD CardSelect, DIO 11: MOSI,  DIO 12: MISO,  DIO 13: SCLK
    AIO-0: Photocell
 */
@@ -17,7 +17,8 @@ RTC_PCF8523 rtc;
 
 // use #define to set the I/O numbers, since these will never change - this saves us memory while the Arduino is running
 #define Relay_Light 5
-#define Relay_Water 2
+#define Relay_Water_1 2
+#define Relay_Water_2 6
 #define LED_1 3
 #define cardSelect 10
 int photocellPin = 0; // the cell and 10K pulldown are connected to a0
@@ -73,12 +74,12 @@ void setup() // this code only happens once
   /* Code for relay switch, pump,button, and LED */
   pinMode(LED_1, OUTPUT);
   pinMode(Relay_Light, OUTPUT);
-  pinMode(Relay_Water, OUTPUT);
+  pinMode(Relay_Water_1, OUTPUT);
   /* End of code for relay switch, pump,button, and LED */
 
   /* Set both relays to LOW upon power reset/set up */
   digitalWrite(Relay_Light, LOW);
-  digitalWrite(Relay_Water, LOW);
+  digitalWrite(Relay_Water_1, LOW);
   /* End: Set both relays to LOW upon power reset/set up */
 
   /* ----- Begin: Setup code for SD Card ----- */
@@ -220,7 +221,7 @@ void loop()
         switch (CurrTime.second())
         {
         case 1: // 7:30:01 am
-          logfile.println("----- Message: Water On -----");
+          logfile.println("----- Message: Water Pump 1 On -----");
           logfile.print(CurrTime.year(), DEC);
           logfile.print('/');
           logfile.print(CurrTime.month(), DEC);
@@ -236,11 +237,51 @@ void loop()
           logfile.print(CurrTime.second(), DEC);
           logfile.println();
           logfile.println("----- End of Message -----");
-          digitalWrite(Relay_Water, HIGH);
-          delay(18000); //delay 18 secoonds
+          digitalWrite(Relay_Water_1, HIGH);
+          delay(20000); //delay 20 secoonds
           CurrTime = rtc.now();
-          digitalWrite(Relay_Water, LOW);
-          logfile.println("----- Message: Water Off -----");
+          digitalWrite(Relay_Water_1, LOW);
+          logfile.println("----- Message: Water Pump 1 Off -----");
+          logfile.print(CurrTime.year(), DEC);
+          logfile.print('/');
+          logfile.print(CurrTime.month(), DEC);
+          logfile.print('/');
+          logfile.print(CurrTime.day(), DEC);
+          logfile.print(" (");
+          logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+          logfile.print(") ");
+          logfile.print(CurrTime.hour(), DEC);
+          logfile.print(':');
+          logfile.print(CurrTime.minute(), DEC);
+          logfile.print(':');
+          logfile.print(CurrTime.second(), DEC);
+          logfile.println();
+          logfile.println("----- End of Message -----");
+          logfile.flush();
+          break;
+        
+        case 2: // 7:30:02 am
+          logfile.println("----- Message: Water Pump 2 On -----");
+          logfile.print(CurrTime.year(), DEC);
+          logfile.print('/');
+          logfile.print(CurrTime.month(), DEC);
+          logfile.print('/');
+          logfile.print(CurrTime.day(), DEC);
+          logfile.print(" (");
+          logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+          logfile.print(") ");
+          logfile.print(CurrTime.hour(), DEC);
+          logfile.print(':');
+          logfile.print(CurrTime.minute(), DEC);
+          logfile.print(':');
+          logfile.print(CurrTime.second(), DEC);
+          logfile.println();
+          logfile.println("----- End of Message -----");
+          digitalWrite(Relay_Water_2, HIGH);
+          delay(20000); //delay 20 secoonds
+          CurrTime = rtc.now();
+          digitalWrite(Relay_Water_2, LOW);
+          logfile.println("----- Message: Water  Pump 2 Off -----");
           logfile.print(CurrTime.year(), DEC);
           logfile.print('/');
           logfile.print(CurrTime.month(), DEC);
@@ -439,7 +480,7 @@ void loop()
         switch (CurrTime.second())
         {
         case 1: // 7:30:01 am
-          logfile.println("----- Message: Water On -----");
+          logfile.println("----- Message: Water Pump 1 On -----");
           logfile.print(CurrTime.year(), DEC);
           logfile.print('/');
           logfile.print(CurrTime.month(), DEC);
@@ -455,11 +496,11 @@ void loop()
           logfile.print(CurrTime.second(), DEC);
           logfile.println();
           logfile.println("----- End of Message -----");
-          digitalWrite(Relay_Water, HIGH);
-          delay(10000); //delay 10 secoonds
+          digitalWrite(Relay_Water_1, HIGH);
+          delay(8000); //delay 8 secoonds
           CurrTime = rtc.now();
-          digitalWrite(Relay_Water, LOW);
-          logfile.println("----- Message: Water Off -----");
+          digitalWrite(Relay_Water_1, LOW);
+          logfile.println("----- Message: Water Pump 1 Off -----");
           logfile.print(CurrTime.year(), DEC);
           logfile.print('/');
           logfile.print(CurrTime.month(), DEC);
