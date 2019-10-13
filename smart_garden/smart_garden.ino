@@ -21,7 +21,7 @@ RTC_PCF8523 rtc;
 #define Relay_Water_2 6
 #define LED_1 3
 #define cardSelect 10
-int photocellPin = 0; // the cell and 10K pulldown are connected to a0
+#define photocellPin 0 // the cell and 10K pulldown are connected to a0
 int photocellReading; // the analog reading from the analog resistor divider
 
 File logfile;
@@ -122,21 +122,22 @@ void setup() // this code only happens once
   uint8_t i = 0;
   /* ----- End: Setup code for SD Card ----- */
 
+  DateTime PowerTime = rtc.now();
   /* ----- BEGIN: Initial Message. Power On. ----- */
   logfile.println("----- Message: System  Power on -----");
-  logfile.print(CurrTime.year(), DEC);
+  logfile.print(PowerTime.year(), DEC);
   logfile.print('/');
-  logfile.print(CurrTime.month(), DEC);
+  logfile.print(PowerTime.month(), DEC);
   logfile.print('/');
-  logfile.print(CurrTime.day(), DEC);
+  logfile.print(PowerTime.day(), DEC);
   logfile.print(" (");
-  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+  logfile.print(daysOfTheWeek[PowerTime.dayOfTheWeek()]);
   logfile.print(") ");
-  logfile.print(CurrTime.hour(), DEC);
+  logfile.print(PowerTime.hour(), DEC);
   logfile.print(':');
-  logfile.print(CurrTime.minute(), DEC);
+  logfile.print(PowerTime.minute(), DEC);
   logfile.print(':');
-  logfile.print(CurrTime.second(), DEC);
+  logfile.print(PowerTime.second(), DEC);
   logfile.println();
   logfile.println("----- End of Message -----");
   logfile.flush();
@@ -146,11 +147,12 @@ void loop()
 {
 
   DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
-  // Check the PhotoCell Pin every 30 secounds
-  switch (CurrTime.secound())
-  {
-  case 30:
+  // Check the PhotoCell Pin every time it changes
+    int tempreading;
+    tempreading = analogRead(photocellPin);
     photocellReading = analogRead(photocellPin);
+    if(tempreading != photocellReading)
+    {
     logfile.println("----- Message: PhotoCell Reading -----");
     logfile.print(photocellReading); // the raw analog reading
 
@@ -159,32 +161,34 @@ void loop()
     {
       Serial.println(" - Dark");
       logfile.println("----- End of Message -----");
+      logfile.flush();
     }
     else if (photocellReading < 200)
     {
       Serial.println(" - Dim");
       logfile.println("----- End of Message -----");
+      logfile.flush();
     }
     else if (photocellReading < 500)
     {
       Serial.println(" - Light");
       logfile.println("----- End of Message -----");
+      logfile.flush();
     }
     else if (photocellReading < 800)
     {
       Serial.println(" - Bright");
       logfile.println("----- End of Message -----");
+      logfile.flush();
     }
     else
     {
       Serial.println(" - Very bright");
       logfile.println("----- End of Message -----");
+      logfile.flush();
     }
-    break;
-
-  default:
-    break;
-  }
+    }
+    
 
   // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
