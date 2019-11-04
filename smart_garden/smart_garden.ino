@@ -192,10 +192,10 @@ void loop()
     case 0: //Sunday
       switch (CurrTime.hour())
       {
-        case 7: // 7 am
+        case 8: // 8 am
           switch (CurrTime.minute())
           {
-            case 1: // 7:01 am
+            case 1: // 8:01 am
               logfile.println("----- Message: Grow Lights On -----");
               logfile.print(CurrTime.year(), DEC);
               logfile.print('/');
@@ -218,7 +218,7 @@ void loop()
             case 30:
               switch (CurrTime.second())
               {
-                case 1: // 7:30:01 am
+                case 1: // 8:30:01 am
                   logfile.println("----- Message: Water Pump 1 On -----");
                   logfile.print(CurrTime.year(), DEC);
                   logfile.print('/');
@@ -258,7 +258,7 @@ void loop()
                   logfile.flush();
                   break;
 
-                case 30: // 7:30:30 am
+                case 30: // 8:30:30 am
                   logfile.println("----- Message: Water Pump 2 On -----");
                   logfile.print(CurrTime.year(), DEC);
                   logfile.print('/');
@@ -302,7 +302,7 @@ void loop()
           }
           break;
 
-        case 13: // hour of day to do something
+        case 14: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -334,7 +334,7 @@ void loop()
     case 1:
       switch (CurrTime.hour())
       {
-        case 7: // hour of day to do something
+        case 8: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -360,7 +360,7 @@ void loop()
           }
           break;
 
-        case 13: // hour of day to do something
+        case 14: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -392,7 +392,7 @@ void loop()
     case 2:
       switch (CurrTime.hour())
       {
-        case 7: // hour of day to do something
+        case 8: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -418,7 +418,7 @@ void loop()
           }
           break;
 
-        case 13: // hour of day to do something
+        case 14: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -450,7 +450,7 @@ void loop()
     case 3:
       switch (CurrTime.hour())
       {
-        case 7: // hour of day to do something
+        case 8: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -477,7 +477,7 @@ void loop()
             case 30:
               switch (CurrTime.second())
               {
-                case 1: // 7:30:01 am
+                case 1: // 8:30:01 am
                   logfile.println("----- Message: Water Pump 1 On -----");
                   logfile.print(CurrTime.year(), DEC);
                   logfile.print('/');
@@ -495,7 +495,7 @@ void loop()
                   logfile.println();
                   logfile.println("----- End of Message -----");
                   digitalWrite(Relay_Water_1, HIGH);
-                  delay(10000); //delay 10 secoonds
+                  delay(15000); //delay 15 secoonds
                   CurrTime = rtc.now();
                   digitalWrite(Relay_Water_1, LOW);
                   logfile.println("----- Message: Water Pump 1 Off -----");
@@ -517,7 +517,7 @@ void loop()
                   logfile.flush();
                   break;
 
-                case 30: // 7:30:30 am
+                case 30: // 8:30:30 am
                   logfile.println("----- Message: Water Pump 2 On -----");
                   logfile.print(CurrTime.year(), DEC);
                   logfile.print('/');
@@ -535,7 +535,7 @@ void loop()
                   logfile.println();
                   logfile.println("----- End of Message -----");
                   digitalWrite(Relay_Water_2, HIGH);
-                  delay(10000); //delay 10 secoonds
+                  delay(15000); //delay 15 secoonds
                   CurrTime = rtc.now();
                   digitalWrite(Relay_Water_2, LOW);
                   logfile.println("----- Message: Water Pump 2 Off -----");
@@ -560,7 +560,7 @@ void loop()
           }
           break;
 
-        case 13: // hour of day to do something
+        case 14: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -592,7 +592,7 @@ void loop()
     case 4:
       switch (CurrTime.hour())
       {
-        case 7: // hour of day to do something
+        case 8: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -618,7 +618,7 @@ void loop()
           }
           break;
 
-        case 13: // hour of day to do something
+        case 14: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -650,7 +650,7 @@ void loop()
     case 5:
       switch (CurrTime.hour())
       {
-        case 7: // hour of day to do something
+        case 8: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -676,7 +676,7 @@ void loop()
           }
           break; // break for 7
 
-        case 13: // hour of day to do something
+        case 14: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -708,7 +708,7 @@ void loop()
     case 6:
       switch (CurrTime.hour())
       {
-        case 7: // hour of day to do something
+        case 8: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
@@ -734,7 +734,7 @@ void loop()
           }
           break;
 
-        case 13: // hour of day to do something
+        case 14: // hour of day to do something
           switch (CurrTime.minute())
           {
             case 1:
