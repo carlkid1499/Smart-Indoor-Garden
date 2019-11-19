@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: carlossantosdev.me
+Token: 60a78f3951806d6317c13b16e1d54652eafe086de88881468306f11dd0e35776
