@@ -127,23 +127,8 @@ void setup() // this code only happens once
 
   DateTime PowerTime = rtc.now();
   /* ----- BEGIN: Initial Message. Power On. ----- */
-  logfile.println("----- Message: System  Power on -----");
-  logfile.print(PowerTime.year(), DEC);
-  logfile.print('/');
-  logfile.print(PowerTime.month(), DEC);
-  logfile.print('/');
-  logfile.print(PowerTime.day(), DEC);
-  logfile.print(" (");
-  logfile.print(daysOfTheWeek[PowerTime.dayOfTheWeek()]);
-  logfile.print(") ");
-  logfile.print(PowerTime.hour(), DEC);
-  logfile.print(':');
-  logfile.print(PowerTime.minute(), DEC);
-  logfile.print(':');
-  logfile.print(PowerTime.second(), DEC);
-  logfile.println();
-  logfile.println("----- End of Message -----");
-  logfile.flush();
+  char message[] = "----- Message: System Power On -----";
+  log_msg(message,PowerTime);
 }
 
 void loop()
@@ -151,10 +136,10 @@ void loop()
 
   DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
   // Check the PhotoCell Pin every time it changes
-  photocellReading = analogRead(photocellPin);
+  /*photocellReading = analogRead(photocellPin);
 
   logfile.println("----- Message: PhotoCell Reading -----");
-  logfile.print(photocellReading); // the raw analog reading
+  logfile.print(photocellReading); // the raw analog reading 
 
   // We'll have a few threshholds, qualitatively determined
   if (photocellReading < 10)
@@ -182,7 +167,7 @@ void loop()
     logfile.println(" - Very bright");
     logfile.println("----- End of Message -----");
   }
-  logfile.flush(); 
+  logfile.flush(); */
 
   // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
@@ -196,106 +181,33 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1: // 8:01 am
-              logfile.println("----- Message: Grow Lights On -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println();
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights On -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, HIGH);
-              logfile.flush();
               break; // Sunday Case 1 break
             case 30:
               switch (CurrTime.second())
               {
                 case 1: // 8:30:01 am
-                  logfile.println("----- Message: Water Pump 1 On -----");
-                  logfile.print(CurrTime.year(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.month(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.day(), DEC);
-                  logfile.print(" (");
-                  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-                  logfile.print(") ");
-                  logfile.print(CurrTime.hour(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.minute(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.second(), DEC);
-                  logfile.println();
-                  logfile.println("----- End of Message -----");
+                  char message1[] = "----- Message: Water Pump 1 On -----";
+                  log_msg(message1,CurrTime);
                   digitalWrite(Relay_Water_1, HIGH);
-                  delay(20000); //delay 20 secoonds
+                  delay(25000); //delay 25 secoonds
                   CurrTime = rtc.now();
                   digitalWrite(Relay_Water_1, LOW);
-                  logfile.println("----- Message: Water Pump 1 Off -----");
-                  logfile.print(CurrTime.year(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.month(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.day(), DEC);
-                  logfile.print(" (");
-                  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-                  logfile.print(") ");
-                  logfile.print(CurrTime.hour(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.minute(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.second(), DEC);
-                  logfile.println();
-                  logfile.println("----- End of Message -----");
-                  logfile.flush();
+                  char message2[] = "----- Message: Water Pump 1 Off -----";
+                  log_msg(message2,CurrTime);
                   break;
 
-                case 30: // 8:30:30 am
-                  logfile.println("----- Message: Water Pump 2 On -----");
-                  logfile.print(CurrTime.year(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.month(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.day(), DEC);
-                  logfile.print(" (");
-                  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-                  logfile.print(") ");
-                  logfile.print(CurrTime.hour(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.minute(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.second(), DEC);
-                  logfile.println();
-                  logfile.println("----- End of Message -----");
+                case 31: // 8:30:31 am
+                  char message3[] = "----- Message: Water Pump 2 On -----";
+                  log_msg(message3,CurrTime);
                   digitalWrite(Relay_Water_2, HIGH);
-                  delay(20000); //delay 20 secoonds
+                  delay(25000); //delay 20 secoonds
                   CurrTime = rtc.now();
                   digitalWrite(Relay_Water_2, LOW);
-                  logfile.println("----- Message: Water  Pump 2 Off -----");
-                  logfile.print(CurrTime.year(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.month(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.day(), DEC);
-                  logfile.print(" (");
-                  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-                  logfile.print(") ");
-                  logfile.print(CurrTime.hour(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.minute(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.second(), DEC);
-                  logfile.println();
-                  logfile.println("----- End of Message -----");
-                  logfile.flush();
+                  char message4[] = "----- Message: Water Pump 2 Off -----";
+                  log_msg(message4,CurrTime);
                   break;
               }
               break; // Case 30 Break
@@ -306,23 +218,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights Off -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights Off -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, LOW);
-              logfile.flush();
               break;
           }
           break;
@@ -338,24 +236,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights On -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println();
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights On -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, HIGH);
-              logfile.flush();
               break;
           }
           break;
@@ -364,23 +247,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights Off -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights Off -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, LOW);
-              logfile.flush();
               break;
           }
           break;
@@ -396,24 +265,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights On -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println();
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights On -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, HIGH);
-              logfile.flush();
               break;
           }
           break;
@@ -422,23 +276,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights Off -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights Off -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, LOW);
-              logfile.flush();
               break;
           }
           break;
@@ -454,27 +294,12 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights On -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println();
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights On -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, HIGH);
-              logfile.flush();
               break;
 
-            case 30:
+            /* case 30:
               switch (CurrTime.second())
               {
                 case 1: // 8:30:01 am
@@ -556,7 +381,7 @@ void loop()
                   logfile.println("----- End of Message -----");
                   logfile.flush();
                   break;
-              }
+              } */
           }
           break;
 
@@ -564,23 +389,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights Off -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights Off -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, LOW);
-              logfile.flush();
               break;
           }
           break;
@@ -596,24 +407,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights On -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println();
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights On -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, HIGH);
-              logfile.flush();
               break;
           }
           break;
@@ -622,23 +418,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights Off -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights Off -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, LOW);
-              logfile.flush();
               break;
           }
           break;
@@ -654,24 +436,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights On -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println();
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights On -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, HIGH);
-              logfile.flush();
               break;
           }
           break; // break for 7
@@ -680,23 +447,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights Off -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights Off -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, LOW);
-              logfile.flush();
               break;
           }
           break; // break for 13
@@ -712,24 +465,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights On -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println();
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights On -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, HIGH);
-              logfile.flush();
               break;
           }
           break;
@@ -738,23 +476,9 @@ void loop()
           switch (CurrTime.minute())
           {
             case 1:
-              logfile.println("----- Message: Grow Lights Off -----");
-              logfile.print(CurrTime.year(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.month(), DEC);
-              logfile.print('/');
-              logfile.print(CurrTime.day(), DEC);
-              logfile.print(" (");
-              logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-              logfile.print(") ");
-              logfile.print(CurrTime.hour(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.minute(), DEC);
-              logfile.print(':');
-              logfile.print(CurrTime.second(), DEC);
-              logfile.println("----- End of Message -----");
+              char message[] = "----- Message: Grow Lights Off -----";
+              log_msg(message,CurrTime);
               digitalWrite(Relay_Light, LOW);
-              logfile.flush();
               break;
           }
           break;
@@ -762,4 +486,25 @@ void loop()
       break;
       /* ----- Saturday Schedule Begins Ends Here ----- */
   }
+}
+
+/* Function for logging to SD card */
+void log_msg(char *message,DateTime CurrTime)
+{
+  logfile.println(message);
+  logfile.print(CurrTime.year(), DEC);
+  logfile.print('/');
+  logfile.print(CurrTime.month(), DEC);
+  logfile.print('/');
+  logfile.print(CurrTime.day(), DEC);
+  logfile.print(" (");
+  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+  logfile.print(") ");
+  logfile.print(CurrTime.hour(), DEC);
+  logfile.print(':');
+  logfile.print(CurrTime.minute(), DEC);
+  logfile.print(':');
+  logfile.print(CurrTime.second(), DEC);
+  logfile.println("----- End of Message -----");
+  logfile.flush();
 }
