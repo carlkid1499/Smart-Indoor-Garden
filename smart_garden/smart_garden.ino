@@ -1,9 +1,9 @@
 /* Smart Garden Project
-   1 Relay Switch to control pumop
-   RTC added on to keep track of time and SD
-   DIO 5: Rely_Light DIO 2: Relay_Water_1, DIO 3: LED,  DIO 6: Relay_Water_2
-   DIO 10: SD CardSelect, DIO 11: MOSI,  DIO 12: MISO,  DIO 13: SCLK
-   AIO-0: Photocell
+** 2 Relay switches to control 2 pumps
+** RTC added on to keep track of time and SD
+** DIO 5: Rely_Light DIO 2: Relay_Water_1, DIO 3: LED,  DIO 6: Relay_Water_2
+** DIO 10: SD CardSelect, DIO 11: MOSI,  DIO 12: MISO,  DIO 13: SCLK
+** AIO-0: Photocell
 */
 
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
@@ -21,9 +21,9 @@ RTC_PCF8523 rtc;
 #define Relay_Water_2 6
 #define LED_1 3
 #define cardSelect 10
-#define photocellPin 0 // the cell and 10K pulldown are connected to a0
-int photocellReading; // the analog reading from the analog resistor divider
+char *message;         // Dynamic array memory for log messages
 
+// Name of the log file. It'll be on boot up.
 File logfile;
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -37,13 +37,15 @@ void error(uint8_t errno)
     for (i = 0; i < errno; i++)
     {
       digitalWrite(13, HIGH);
+      digitalWrite(LED_1, HIGH);
       delay(100);
       digitalWrite(13, LOW);
+      digitalWrite(LED_1, LOW);
       delay(100);
     }
     for (i = errno; i < 10; i++)
     {
-      delay(200);
+      delay(2000);
     }
   }
 }
@@ -55,8 +57,7 @@ void setup() // this code only happens once
   if (!rtc.begin())
   {
     Serial.println("Couldn't find RTC");
-    while (1)
-      ;
+    error(10);
   }
 
   if (!rtc.initialized()) // If RTC is no running
@@ -122,184 +123,164 @@ void setup() // this code only happens once
   pinMode(8, OUTPUT);
   Serial.println("Ready!");
 
-  uint8_t i = 0;
   /* ----- End: Setup code for SD Card ----- */
 
   DateTime PowerTime = rtc.now();
   /* ----- BEGIN: Initial Message. Power On. ----- */
-  char message[] = "----- Message: System Power On -----";
-  log_msg(message,PowerTime);
+  new char message = "----- Message: System Power On -----";
+  log_msg(message, PowerTime);
+  delete[] message;
 }
 
 void loop()
 {
 
   DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
-  // Check the PhotoCell Pin every time it changes
-  /*photocellReading = analogRead(photocellPin);
-
-  logfile.println("----- Message: PhotoCell Reading -----");
-  logfile.print(photocellReading); // the raw analog reading 
-
-  // We'll have a few threshholds, qualitatively determined
-  if (photocellReading < 10)
-  {
-    logfile.println(" - Dark");
-    logfile.println("----- End of Message -----");
-  }
-  else if (photocellReading < 200)
-  {
-    logfile.println(" - Dim");
-    logfile.println("----- End of Message -----");
-  }
-  else if (photocellReading < 500)
-  {
-    logfile.println(" - Light");
-    logfile.println("----- End of Message -----");
-  }
-  else if (photocellReading < 800)
-  {
-    logfile.println(" - Bright");
-    logfile.println("----- End of Message -----");
-  }
-  else
-  {
-    logfile.println(" - Very bright");
-    logfile.println("----- End of Message -----");
-  }
-  logfile.flush(); */
-
-  // Let's try using some switch statements to determine water and light times
   switch (CurrTime.dayOfTheWeek())
   {
-    // case for each day of the week. Turn growlights on each day at 7:01 am and water every three days
-    /* ----- Sunday Schedule Begins Here ----- */
-    case 0: //Sunday
-      switch (CurrTime.hour())
+  /* ----- Sunday Schedule Begins Here ----- */
+  case 0: //Sunday
+    switch (CurrTime.hour())
+    {
+    case 8: // 8 am
+      switch (CurrTime.minute())
       {
-        case 8: // 8 am
-          switch (CurrTime.minute())
-          {
-            case 1: // 8:01 am
-              char message[] = "----- Message: Grow Lights On -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, HIGH);
-              break; // Sunday Case 1 break
-            case 30:
-              switch (CurrTime.second())
-              {
-                case 1: // 8:30:01 am
-                  char message1[] = "----- Message: Water Pump 1 On -----";
-                  log_msg(message1,CurrTime);
-                  digitalWrite(Relay_Water_1, HIGH);
-                  delay(25000); //delay 25 secoonds
-                  CurrTime = rtc.now();
-                  digitalWrite(Relay_Water_1, LOW);
-                  char message2[] = "----- Message: Water Pump 1 Off -----";
-                  log_msg(message2,CurrTime);
-                  break;
-
-                case 31: // 8:30:31 am
-                  char message3[] = "----- Message: Water Pump 2 On -----";
-                  log_msg(message3,CurrTime);
-                  digitalWrite(Relay_Water_2, HIGH);
-                  delay(25000); //delay 20 secoonds
-                  CurrTime = rtc.now();
-                  digitalWrite(Relay_Water_2, LOW);
-                  char message4[] = "----- Message: Water Pump 2 Off -----";
-                  log_msg(message4,CurrTime);
-                  break;
-              }
-              break; // Case 30 Break
-          }
+      case 1: // 8:01 am
+      {
+        new char message = "----- Message: Grow Lights On -----";
+        log_msg(message, CurrTime);
+        delete[] message;
+        digitalWrite(Relay_Light, HIGH);
+        break; // Sunday Case 1 break
+      }
+      case 30:
+        switch (CurrTime.second())
+        {
+        case 1: // 8:30:01 am
+        {
+          new char message = "----- Message: Water Pump 1 On -----";
+          log_msg(message, CurrTime);
+          delete[] message;
+          digitalWrite(Relay_Water_1, HIGH);
+          delay(20000); //delay 20 secoonds
+          CurrTime = rtc.now();
+          digitalWrite(Relay_Water_1, LOW);
+          message = "----- Message: Water Pump 1 Off -----";
+          log_msg(message, CurrTime);
+          delete[] message;
           break;
-
-        case 14: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights Off -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, LOW);
-              break;
-          }
+        }
+        case 31: // 8:30:31 am
+        {
+          message = "----- Message: Water Pump 2 On -----";
+          log_msg(message, CurrTime);
+          delete[] message;
+          digitalWrite(Relay_Water_2, HIGH);
+          delay(25000); //delay 20 secoonds
+          CurrTime = rtc.now();
+          digitalWrite(Relay_Water_2, LOW);
+          message = "----- Message: Water Pump 2 Off -----";
+          log_msg(message, CurrTime);
+          delete[] message;
           break;
+        }
+        }
+        break; // Case 30 Break
       }
       break;
-    /* ----- Sunday Schedule Begins Ends Here ----- */
 
-    /* ----- Monday Schedule Begins Here ----- */
-    case 1:
-      switch (CurrTime.hour())
+    case 14: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 8: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights On -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, HIGH);
-              break;
-          }
-          break;
-
-        case 14: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights Off -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, LOW);
-              break;
-          }
-          break;
+      case 1:
+      {
+        message = "----- Message: Grow Lights Off -----";
+        log_msg(message, CurrTime);
+        delete[] message;
+        digitalWrite(Relay_Light, LOW);
+        break;
+      }
       }
       break;
-    /* ----- Monday Schedule Begins Ends Here ----- */
+    }
+    break;
+  /* ----- Sunday Schedule Begins Ends Here ----- */
 
-    /* ----- Tuesday Schedule Begins Here ----- */
-    case 2:
-      switch (CurrTime.hour())
+  /* ----- Monday Schedule Begins Here ----- */
+  case 1:
+    switch (CurrTime.hour())
+    {
+    case 8: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 8: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights On -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, HIGH);
-              break;
-          }
-          break;
-
-        case 14: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights Off -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, LOW);
-              break;
-          }
-          break;
+      case 1:
+        message = "----- Message: Grow Lights On -----";
+        log_msg(message, CurrTime);
+        delete[] message;
+        digitalWrite(Relay_Light, HIGH);
+        break;
       }
       break;
-    /* ----- Tuesday Schedule Begins Ends Here ----- */
 
-    /* ----- Wednesday Schedule Begins Here ----- */
-    case 3:
-      switch (CurrTime.hour())
+    case 14: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 8: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights On -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, HIGH);
-              break;
+      case 1:
+        message = "----- Message: Grow Lights Off -----";
+        log_msg(message, CurrTime);
+        delete[] message;
+        digitalWrite(Relay_Light, LOW);
+        break;
+      }
+      break;
+    }
+    break;
+  /* ----- Monday Schedule Begins Ends Here ----- */
 
-            /* case 30:
+  /* ----- Tuesday Schedule Begins Here ----- */
+  case 2:
+    switch (CurrTime.hour())
+    {
+    case 8: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        message = "----- Message: Grow Lights On -----";
+        log_msg(message, CurrTime);
+        delete[] message;
+        digitalWrite(Relay_Light, HIGH);
+        break;
+      }
+      break;
+
+    case 14: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        message = "----- Message: Grow Lights Off -----";
+        log_msg(message, CurrTime);
+        digitalWrite(Relay_Light, LOW);
+        break;
+      }
+      break;
+    }
+    break;
+  /* ----- Tuesday Schedule Begins Ends Here ----- */
+
+  /* ----- Wednesday Schedule Begins Here ----- */
+  case 3:
+    switch (CurrTime.hour())
+    {
+    case 8: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        message = "----- Message: Grow Lights On -----";
+        log_msg(message, CurrTime);
+        digitalWrite(Relay_Light, HIGH);
+        break;
+
+        /* case 30:
               switch (CurrTime.second())
               {
                 case 1: // 8:30:01 am
@@ -382,114 +363,114 @@ void loop()
                   logfile.flush();
                   break;
               } */
-          }
-          break;
-
-        case 14: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights Off -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, LOW);
-              break;
-          }
-          break;
       }
       break;
-    /* ----- Wednesday Schedule Begins Ends Here ----- */
 
-    /* ----- Thursday Schedule Begins Here ----- */
-    case 4:
-      switch (CurrTime.hour())
+    case 14: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 8: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights On -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, HIGH);
-              break;
-          }
-          break;
-
-        case 14: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights Off -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, LOW);
-              break;
-          }
-          break;
+      case 1:
+        message = "----- Message: Grow Lights Off -----";
+        log_msg(message, CurrTime);
+        digitalWrite(Relay_Light, LOW);
+        break;
       }
       break;
-    /* ----- Thursday Schedule Begins Ends Here ----- */
+    }
+    break;
+  /* ----- Wednesday Schedule Begins Ends Here ----- */
 
-    /* ----- Friday Schedule Begins Here ----- */
-    case 5:
-      switch (CurrTime.hour())
+  /* ----- Thursday Schedule Begins Here ----- */
+  case 4:
+    switch (CurrTime.hour())
+    {
+    case 8: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 8: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights On -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, HIGH);
-              break;
-          }
-          break; // break for 7
-
-        case 14: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights Off -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, LOW);
-              break;
-          }
-          break; // break for 13
+      case 1:
+        message = "----- Message: Grow Lights On -----";
+        log_msg(message, CurrTime);
+        digitalWrite(Relay_Light, HIGH);
+        break;
       }
       break;
-    /* ----- Friday Schedule Begins Ends Here ----- */
 
-    /* ----- Saturday Schedule Begins Here ----- */
-    case 6:
-      switch (CurrTime.hour())
+    case 14: // hour of day to do something
+      switch (CurrTime.minute())
       {
-        case 8: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights On -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, HIGH);
-              break;
-          }
-          break;
-
-        case 14: // hour of day to do something
-          switch (CurrTime.minute())
-          {
-            case 1:
-              char message[] = "----- Message: Grow Lights Off -----";
-              log_msg(message,CurrTime);
-              digitalWrite(Relay_Light, LOW);
-              break;
-          }
-          break;
+      case 1:
+        message = "----- Message: Grow Lights Off -----";
+        log_msg(message, CurrTime);
+        digitalWrite(Relay_Light, LOW);
+        break;
       }
       break;
-      /* ----- Saturday Schedule Begins Ends Here ----- */
+    }
+    break;
+  /* ----- Thursday Schedule Begins Ends Here ----- */
+
+  /* ----- Friday Schedule Begins Here ----- */
+  case 5:
+    switch (CurrTime.hour())
+    {
+    case 8: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        message = "----- Message: Grow Lights On -----";
+        log_msg(message, CurrTime);
+        digitalWrite(Relay_Light, HIGH);
+        break;
+      }
+      break; // break for 7
+
+    case 14: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        message = "----- Message: Grow Lights Off -----";
+        log_msg(message, CurrTime);
+        digitalWrite(Relay_Light, LOW);
+        break;
+      }
+      break; // break for 13
+    }
+    break;
+  /* ----- Friday Schedule Begins Ends Here ----- */
+
+  /* ----- Saturday Schedule Begins Here ----- */
+  case 6:
+    switch (CurrTime.hour())
+    {
+    case 8: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        message = "----- Message: Grow Lights On -----";
+        log_msg(message, CurrTime);
+        digitalWrite(Relay_Light, HIGH);
+        break;
+      }
+      break;
+
+    case 14: // hour of day to do something
+      switch (CurrTime.minute())
+      {
+      case 1:
+        message = "----- Message: Grow Lights Off -----";
+        log_msg(message, CurrTime);
+        digitalWrite(Relay_Light, LOW);
+        break;
+      }
+      break;
+    }
+    break;
+    /* ----- Saturday Schedule Begins Ends Here ----- */
   }
 }
 
 /* Function for logging to SD card */
-void log_msg(char *message,DateTime CurrTime)
+void log_msg(char *message, DateTime CurrTime)
 {
   logfile.println(message);
   logfile.print(CurrTime.year(), DEC);
