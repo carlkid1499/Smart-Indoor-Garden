@@ -162,24 +162,24 @@ void loop()
           log_msg(message, CurrTime);
           delete[] message;
           digitalWrite(Relay_Water_1, HIGH);
-          delay(20000); //delay 20 secoonds
+          delay(20000); //delay 25 secoonds
           CurrTime = rtc.now();
           digitalWrite(Relay_Water_1, LOW);
-          message = "----- Message: Water Pump 1 Off -----";
+          new char message "----- Message: Water Pump 1 Off -----";
           log_msg(message, CurrTime);
           delete[] message;
           break;
         }
         case 31: // 8:30:31 am
         {
-          message = "----- Message: Water Pump 2 On -----";
+          new char message "----- Message: Water Pump 2 On -----";
           log_msg(message, CurrTime);
           delete[] message;
           digitalWrite(Relay_Water_2, HIGH);
           delay(25000); //delay 20 secoonds
           CurrTime = rtc.now();
           digitalWrite(Relay_Water_2, LOW);
-          message = "----- Message: Water Pump 2 Off -----";
+          new char message "----- Message: Water Pump 2 Off -----";
           log_msg(message, CurrTime);
           delete[] message;
           break;
@@ -194,7 +194,7 @@ void loop()
       {
       case 1:
       {
-        message = "----- Message: Grow Lights Off -----";
+        new char message "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
         delete[] message;
         digitalWrite(Relay_Light, LOW);
@@ -214,7 +214,7 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights On -----";
+        new char message "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
         delete[] message;
         digitalWrite(Relay_Light, HIGH);
@@ -226,7 +226,7 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights Off -----";
+        new char message "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
         delete[] message;
         digitalWrite(Relay_Light, LOW);
@@ -245,7 +245,7 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights On -----";
+        new char message "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
         delete[] message;
         digitalWrite(Relay_Light, HIGH);
@@ -257,8 +257,9 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights Off -----";
+        new char message "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
+        delete[] message;
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -275,8 +276,9 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights On -----";
+        new char message "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
+        delete[] message;
         digitalWrite(Relay_Light, HIGH);
         break;
 
@@ -370,8 +372,9 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights Off -----";
+        new char message "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
+        delete[] message;
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -388,8 +391,9 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights On -----";
+        new char message "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
+        delete[] message;
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -399,8 +403,9 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights Off -----";
+        new char message "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
+        delete[] message;
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -417,8 +422,9 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights On -----";
+        new char message "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
+        delete[] message;
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -428,8 +434,9 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights Off -----";
+        new char message "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
+        delete[] message;
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -446,8 +453,9 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights On -----";
+        new char message "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
+        delete[] message;
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -457,8 +465,9 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        message = "----- Message: Grow Lights Off -----";
+        new char message "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
+        delete[] message;
         digitalWrite(Relay_Light, LOW);
         break;
       }
