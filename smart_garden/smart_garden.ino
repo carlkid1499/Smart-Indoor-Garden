@@ -21,7 +21,6 @@ RTC_PCF8523 rtc;
 #define Relay_Water_2 6
 #define LED_1 3
 #define cardSelect 10
-char *message;         // Dynamic array memory for log messages
 
 // Name of the log file. It'll be on boot up.
 File logfile;
@@ -108,7 +107,7 @@ void setup() // this code only happens once
       break;
     }
   }
-
+  
   logfile = SD.open(filename, FILE_WRITE);
   if (!logfile)
   {
@@ -127,9 +126,10 @@ void setup() // this code only happens once
 
   DateTime PowerTime = rtc.now();
   /* ----- BEGIN: Initial Message. Power On. ----- */
-  new char message = "----- Message: System Power On -----";
+  
+  char message [] = "----- Message: System Power On -----";
   log_msg(message, PowerTime);
-  delete[] message;
+  
 }
 
 void loop()
@@ -147,9 +147,10 @@ void loop()
       {
       case 1: // 8:01 am
       {
-        new char message = "----- Message: Grow Lights On -----";
+        
+        char message [] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, HIGH);
         break; // Sunday Case 1 break
       }
@@ -158,30 +159,34 @@ void loop()
         {
         case 1: // 8:30:01 am
         {
-          new char message = "----- Message: Water Pump 1 On -----";
+          
+          char message [] = "----- Message: Water Pump 1 On -----";
           log_msg(message, CurrTime);
-          delete[] message;
+          
           digitalWrite(Relay_Water_1, HIGH);
           delay(20000); //delay 25 secoonds
           CurrTime = rtc.now();
           digitalWrite(Relay_Water_1, LOW);
-          new char message "----- Message: Water Pump 1 Off -----";
-          log_msg(message, CurrTime);
-          delete[] message;
+          
+          char message2 [] = "----- Message: Water Pump 1 Off -----";
+          log_msg(message2, CurrTime);
+          
           break;
         }
         case 31: // 8:30:31 am
         {
-          new char message "----- Message: Water Pump 2 On -----";
+          
+          char message [] = "----- Message: Water Pump 2 On -----";
           log_msg(message, CurrTime);
-          delete[] message;
+          
           digitalWrite(Relay_Water_2, HIGH);
           delay(25000); //delay 20 secoonds
           CurrTime = rtc.now();
           digitalWrite(Relay_Water_2, LOW);
-          new char message "----- Message: Water Pump 2 Off -----";
-          log_msg(message, CurrTime);
-          delete[] message;
+          
+          char message2 [] = "----- Message: Water Pump 2 Off -----";
+          log_msg(message2, CurrTime);
+          
           break;
         }
         }
@@ -194,9 +199,10 @@ void loop()
       {
       case 1:
       {
-        new char message "----- Message: Grow Lights Off -----";
+        
+        char message [] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -214,9 +220,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights On -----";
+        
+        char message [] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -226,9 +233,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights Off -----";
+        
+        char message [] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -245,9 +253,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights On -----";
+        
+        char message [] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -257,9 +266,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights Off -----";
+        
+        char message [] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -276,95 +286,12 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights On -----";
+        
+        char message [] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, HIGH);
         break;
-
-        /* case 30:
-              switch (CurrTime.second())
-              {
-                case 1: // 8:30:01 am
-                  logfile.println("----- Message: Water Pump 1 On -----");
-                  logfile.print(CurrTime.year(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.month(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.day(), DEC);
-                  logfile.print(" (");
-                  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-                  logfile.print(") ");
-                  logfile.print(CurrTime.hour(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.minute(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.second(), DEC);
-                  logfile.println();
-                  logfile.println("----- End of Message -----");
-                  digitalWrite(Relay_Water_1, HIGH);
-                  delay(15000); //delay 15 secoonds
-                  CurrTime = rtc.now();
-                  digitalWrite(Relay_Water_1, LOW);
-                  logfile.println("----- Message: Water Pump 1 Off -----");
-                  logfile.print(CurrTime.year(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.month(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.day(), DEC);
-                  logfile.print(" (");
-                  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-                  logfile.print(") ");
-                  logfile.print(CurrTime.hour(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.minute(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.second(), DEC);
-                  logfile.println();
-                  logfile.println("----- End of Message -----");
-                  logfile.flush();
-                  break;
-
-                case 30: // 8:30:30 am
-                  logfile.println("----- Message: Water Pump 2 On -----");
-                  logfile.print(CurrTime.year(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.month(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.day(), DEC);
-                  logfile.print(" (");
-                  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-                  logfile.print(") ");
-                  logfile.print(CurrTime.hour(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.minute(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.second(), DEC);
-                  logfile.println();
-                  logfile.println("----- End of Message -----");
-                  digitalWrite(Relay_Water_2, HIGH);
-                  delay(15000); //delay 15 secoonds
-                  CurrTime = rtc.now();
-                  digitalWrite(Relay_Water_2, LOW);
-                  logfile.println("----- Message: Water Pump 2 Off -----");
-                  logfile.print(CurrTime.year(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.month(), DEC);
-                  logfile.print('/');
-                  logfile.print(CurrTime.day(), DEC);
-                  logfile.print(" (");
-                  logfile.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
-                  logfile.print(") ");
-                  logfile.print(CurrTime.hour(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.minute(), DEC);
-                  logfile.print(':');
-                  logfile.print(CurrTime.second(), DEC);
-                  logfile.println();
-                  logfile.println("----- End of Message -----");
-                  logfile.flush();
-                  break;
-              } */
       }
       break;
 
@@ -372,9 +299,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights Off -----";
+        
+        char message [] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -391,9 +319,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights On -----";
+        
+        char message [] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -403,9 +332,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights Off -----";
+         
+        char message [] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -422,9 +352,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights On -----";
+        
+        char message [] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -434,9 +365,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights Off -----";
+        
+        char message [] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -453,9 +385,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights On -----";
+        
+        char message [] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -465,9 +398,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        new char message "----- Message: Grow Lights Off -----";
+        
+        char message [] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        delete[] message;
+        
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -497,4 +431,28 @@ void log_msg(char *message, DateTime CurrTime)
   logfile.print(CurrTime.second(), DEC);
   logfile.println("----- End of Message -----");
   logfile.flush();
+}
+
+void printDirectory(File dir, int numTabs) {
+  while (true) {
+
+    File entry =  dir.openNextFile();
+    if (! entry) {
+      // no more files
+      break;
+    }
+    for (uint8_t i = 0; i < numTabs; i++) {
+      Serial.print('\t');
+    }
+    Serial.print(entry.name());
+    if (entry.isDirectory()) {
+      Serial.println("/");
+      printDirectory(entry, numTabs + 1);
+    } else {
+      // files have sizes, directories do not
+      Serial.print("\t\t");
+      Serial.println(entry.size(), DEC);
+    }
+    entry.close();
+  }
 }

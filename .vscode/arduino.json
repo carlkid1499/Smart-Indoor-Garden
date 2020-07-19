@@ -1,5 +1,7 @@
 {
     "port": "COM3",
-    "board": "arduino:avr:uno",
-    "sketch": "smart_garden_Alpha\\smart_garden_Alpha.ino"
+    "board": "arduino:avr:diecimila",
+    "sketch": "smart_garden\\smart_garden.ino",
+    "programmer": "AVR ISP",
+    "configuration": "cpu=atmega328"
 }
