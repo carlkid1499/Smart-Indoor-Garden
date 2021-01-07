@@ -1,9 +1,11 @@
 /* Smart Garden Project
 ** 2 Relay switches to control 2 pumps
 ** RTC added on to keep track of time and SD
-** DIO 5: Rely_Light DIO 2: Relay_Water_1, DIO 3: LED,  DIO 6: Relay_Water_2
+** DIO 5: Rely_Water_1
+** DIO 6: Relay_Water_2
+** DIO 7: Relay_Light
+** DIO 8: LED
 ** DIO 10: SD CardSelect, DIO 11: MOSI,  DIO 12: MISO,  DIO 13: SCLK
-** AIO-0: Photocell
 */
 
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
@@ -16,10 +18,10 @@
 RTC_PCF8523 rtc;
 
 // use #define to set the I/O numbers, since these will never change - this saves us memory while the Arduino is running
-#define Relay_Light 5
-#define Relay_Water_1 2
+#define Relay_Light 7
+#define Relay_Water_1 5
 #define Relay_Water_2 6
-#define LED_1 3
+#define LED_1 8
 #define cardSelect 10
 
 // Name of the log file. It'll be on boot up.
@@ -35,10 +37,8 @@ void error(uint8_t errno)
     uint8_t i;
     for (i = 0; i < errno; i++)
     {
-      digitalWrite(13, HIGH);
       digitalWrite(LED_1, HIGH);
       delay(100);
-      digitalWrite(13, LOW);
       digitalWrite(LED_1, LOW);
       delay(100);
     }
@@ -87,7 +87,6 @@ void setup() // this code only happens once
 
   /* ----- Begin: Setup code for SD Card ----- */
   Serial.println("\r\nAnalog logger test");
-  pinMode(13, OUTPUT);
 
   // see if the card is present and can be initialized:
   if (!SD.begin(cardSelect))
@@ -117,9 +116,6 @@ void setup() // this code only happens once
   }
   Serial.print("Writing to ");
   Serial.println(filename);
-
-  pinMode(13, OUTPUT);
-  pinMode(8, OUTPUT);
   Serial.println("Ready!");
 
   /* ----- End: Setup code for SD Card ----- */
@@ -129,7 +125,9 @@ void setup() // this code only happens once
   
   char message [] = "----- Message: System Power On -----";
   log_msg(message, PowerTime);
-  
+
+  /* ----- If we get here success ----- */
+  digitalWrite(LED_1, HIGH); 
 }
 
 void loop()
