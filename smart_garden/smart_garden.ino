@@ -1,35 +1,42 @@
 /* Smart Garden Project
+** https://github.com/carlkid1499/Smart-Garden  
 ** 2 Relay switches to control 2 pumps
 ** RTC added on to keep track of time and SD
 ** DIO 5: Rely_Water_1
 ** DIO 6: Relay_Water_2
 ** DIO 7: Relay_Light
-** DIO 8: LED
-** DIO 10: SD CardSelect, DIO 11: MOSI,  DIO 12: MISO,  DIO 13: SCLK
+** DIO 8: LED_1
+** DIO 9: ESP CS
+** DIO 10: SD CS
+** DIO 11: MOSI
+** DIO 12: MISO 
+** DIO 13: SCLK
 */
 
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
 #include <Wire.h>
 #include "RTClib.h"
-// Library for SD card on RTC
+// Libs for SD card on RTC
 #include <SPI.h>
 #include <SD.h>
+// Libs for ESP
 
 RTC_PCF8523 rtc;
 
-// use #define to set the I/O numbers, since these will never change - this saves us memory while the Arduino is running
 #define Relay_Light 7
 #define Relay_Water_1 5
 #define Relay_Water_2 6
 #define LED_1 8
+#define ESPCS 9
 #define cardSelect 10
 
 // Name of the log file. It'll be on boot up.
 File logfile;
 
+// Create 2D array for days
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
-// blink out an error code
+// Define error function
 void error(uint8_t errno)
 {
   while (1)
@@ -49,9 +56,10 @@ void error(uint8_t errno)
   }
 }
 
-void setup() // this code only happens once
+// define the setup function
+void setup()
 {
-  /* Code for the RTC Unit */
+  /***** BEGIN: Code for the RTC Unit *****/
   Serial.begin(57600);
   if (!rtc.begin())
   {
@@ -69,23 +77,22 @@ void setup() // this code only happens once
     // following line sets the RTC to the date & time this sketch was compiled
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
-  /* End of code for the RTC Unit */
+  /***** END: Code for the RTC Unit *****/
 
-  /* Code for relay switch, pump,button, and LED */
+  /***** BEGIN: pinModes *****/
   pinMode(LED_1, OUTPUT);
   pinMode(Relay_Light, OUTPUT);
   pinMode(Relay_Water_1, OUTPUT);
   pinMode(Relay_Water_2, OUTPUT);
-  /* End of code for relay switch, pump,button, and LED */
+  /***** END: pinModes *****/
 
-  /* Set both relays to LOW upon power reset/set up */
+  /***** BEGIN: Init Relays *****/
   digitalWrite(Relay_Light, LOW);
   digitalWrite(Relay_Water_1, LOW);
   digitalWrite(Relay_Water_2, LOW);
+  /***** END: Init Relays *****/
 
-  /* End: Set both relays to LOW upon power reset/set up */
-
-  /* ----- Begin: Setup code for SD Card ----- */
+  /***** Begin: Setup code for SD Card *****/
   Serial.println("\r\nAnalog logger test");
 
   // see if the card is present and can be initialized:
@@ -117,19 +124,19 @@ void setup() // this code only happens once
   Serial.print("Writing to ");
   Serial.println(filename);
   Serial.println("Ready!");
+  /***** END: Setup code for SD Card *****/
 
-  /* ----- End: Setup code for SD Card ----- */
-
+  /***** BEGIN: Initial Message. Power On. *****/
   DateTime PowerTime = rtc.now();
-  /* ----- BEGIN: Initial Message. Power On. ----- */
-  
   char message [] = "----- Message: System Power On -----";
   log_msg(message, PowerTime);
-
-  /* ----- If we get here success ----- */
+  /***** END: Initial Message. Power On. *****/
+  
+  /***** If we get here success *****/
   digitalWrite(LED_1, HIGH); 
 }
 
+// define the infinite loop function
 void loop()
 {
 
