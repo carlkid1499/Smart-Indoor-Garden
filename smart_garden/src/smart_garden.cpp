@@ -14,6 +14,7 @@
 */
 
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
+#include <Arduino.h>
 #include <Wire.h>
 #include "RTClib.h"
 // Libs for SD card on RTC
@@ -28,13 +29,20 @@ RTC_PCF8523 rtc;
 #define Relay_Water_2 6
 #define LED_1 8
 #define ESPCS 9
-#define cardSelect 10
+#define SDCS 10
 
 // Name of the log file. It'll be on boot up.
 File logfile;
 
 // Create 2D array for days
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+
+void printDirectory(File dir, int numTabs);
+void error(uint8_t errno);
+void setup();
+void loop();
+void log_msg(char *message, DateTime CurrTime);
 
 // Define error function
 void error(uint8_t errno)
@@ -84,6 +92,8 @@ void setup()
   pinMode(Relay_Light, OUTPUT);
   pinMode(Relay_Water_1, OUTPUT);
   pinMode(Relay_Water_2, OUTPUT);
+  pinMode(ESPCS, OUTPUT);
+  pinMode(SDCS, OUTPUT);
   /***** END: pinModes *****/
 
   /***** BEGIN: Init Relays *****/
@@ -96,7 +106,7 @@ void setup()
   Serial.println("\r\nAnalog logger test");
 
   // see if the card is present and can be initialized:
-  if (!SD.begin(cardSelect))
+  if (!SD.begin(SDCS))
   {
     Serial.println("Card init. failed!");
     error(2);
