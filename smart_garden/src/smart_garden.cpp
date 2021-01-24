@@ -150,6 +150,11 @@ void setup()
       error(10);
     };
   }
+
+  // print your MAC address:
+  byte mac[6];
+  WiFi.macAddress(mac);
+  Serial.print("MAC: ");
   /***** END: Setup code for AirLift *****/
 
   /***** BEGIN: Initial Message. Power On. *****/
