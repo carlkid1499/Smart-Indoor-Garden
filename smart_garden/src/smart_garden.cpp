@@ -2,6 +2,8 @@
 ** https://github.com/carlkid1499/Smart-Garden  
 ** 2 Relay switches to control 2 pumps
 ** RTC added on to keep track of time and SD
+** DIO 2: ESPRST
+** DIO 3: ESPBUSY
 ** DIO 5: Rely_Water_1
 ** DIO 6: Relay_Water_2
 ** DIO 7: Relay_Light
@@ -20,10 +22,14 @@
 // Libs for SD card on RTC
 #include <SPI.h>
 #include <SD.h>
-// Libs for ESP
+// Libs for ESP. Note also uses SPI
+#include <WiFiNINA.h>
+#define ESPSPI SPI
 
 RTC_PCF8523 rtc;
 
+#define ESPRST 2
+#define ESPBUSY 3
 #define Relay_Light 7
 #define Relay_Water_1 5
 #define Relay_Water_2 6
@@ -135,6 +141,20 @@ void setup()
   Serial.println(filename);
   Serial.println("Ready!");
   /***** END: Setup code for SD Card *****/
+
+  /***** BEGIN: Setup code for AirLift *****/
+  // Set up the pins!
+  WiFi.setPins(ESPCS, ESPBUSY, ESPRST, -1, &ESPSPI);
+  // check for the WiFi module:
+  if (WiFi.status() == WL_NO_MODULE) {
+    Serial.println("Communication with WiFi module failed!");
+    // don't continue
+    while (true)
+    {
+      error(10);
+    };
+  }
+  /***** END: Setup code for AirLift *****/
 
   /***** BEGIN: Initial Message. Power On. *****/
   DateTime PowerTime = rtc.now();
