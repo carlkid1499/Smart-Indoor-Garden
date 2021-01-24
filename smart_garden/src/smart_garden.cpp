@@ -59,14 +59,11 @@ void error(uint8_t errno)
     for (i = 0; i < errno; i++)
     {
       digitalWrite(LED_1, HIGH);
-      delay(100);
+      delay(250);
       digitalWrite(LED_1, LOW);
-      delay(100);
+      delay(250);
     }
-    for (i = errno; i < 10; i++)
-    {
-      delay(2000);
-    }
+    delay(5000);
   }
 }
 
@@ -98,7 +95,6 @@ void setup()
   pinMode(Relay_Light, OUTPUT);
   pinMode(Relay_Water_1, OUTPUT);
   pinMode(Relay_Water_2, OUTPUT);
-  pinMode(ESPCS, OUTPUT);
   pinMode(SDCS, OUTPUT);
   /***** END: pinModes *****/
 
