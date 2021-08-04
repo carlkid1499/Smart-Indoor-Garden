@@ -20,6 +20,7 @@
 #include <AsyncTCP.h>
 #include <SPIFFS.h>
 #include <ESPAsyncWebServer.h>
+#include <ArduinoJson.h>
 
 AsyncWebServer server(80);
 
@@ -39,19 +40,19 @@ const char index_html[] PROGMEM = R"rawliteral(
     }
   </script></head><body>
   <form action="/get" target="hidden-form">
-    Set Light Time On: <input type="text" name="SetLightTimeOn">
+    Set Light Time On: <input type="datetime-local" name="SetLightTimeOn" value="2021-08-01T12:00">
     <input type="submit" value="Submit" onclick="submitMessage()">
   </form><br>
   <form action="/get" target="hidden-form">
-    Set Light Time Off: <input type="text" name="SetLightTimeOff">
+    Set Light Time Off: <input type="datetime-local" name="SetLightTimeOff" value="2021-08-01T12:00">
     <input type="submit" value="Submit" onclick="submitMessage()">
   </form><br>
   <form action="/get" target="hidden-form">
-    Set Water Time On: <input type="text" name="SetWaterTimeOn">
+    Set Water Time On: <input type="datetime-local" name="SetWaterTimeOn" value="2021-08-01T12:00">
     <input type="submit" value="Submit" onclick="submitMessage()">
   </form><br>
   <form action="/get" target="hidden-form">
-    Set Water Time Off: <input type="text" name="SetWaterTimeOff">
+    Set Water Time Off: <input type="datetime-local" name="SetWaterTimeOff" value="2021-08-01T12:00">
     <input type="submit" value="Submit" onclick="submitMessage()">
   </form><br>
   <form action="/get" target="hidden-form">
