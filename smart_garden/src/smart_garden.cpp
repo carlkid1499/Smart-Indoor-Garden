@@ -28,6 +28,9 @@ AsyncWebServer server(80);
 const char *ssid = "";
 const char *password = "";
 
+// Create a json object to hold our json in RAM
+StaticJsonDocument<10> output_doc;
+
 // HTML web page to handle 3 input fields (inputString, inputInt, inputFloat)
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML><html><head>
@@ -150,9 +153,39 @@ String processor(const String &var)
   return String();
 }
 
+void write_json_values(const char *filename, JsonDocument &json_doc)
+{
+  // Open the file for writting
+  File myfile = SPIFFS.open(filename, "w");
+
+  // Access our json values & serialize them
+  char output[50] = "";
+  serializeJson(json_doc, output);
+
+  // Write to the file
+  myfile.write(output, 50);
+
+  // Close the file
+  myfile.close();
+}
+
+int read_json_values(const char *filename, JsonDocument &json_doc)
+{
+  uint val = 0;
+  // Get the contents of the file
+  char input[50] = readFile(SPIFFS, file); // PICK UP WORK HERE
+
+  // Access our json values & deserialize them
+  deserializeJson(json_doc, input);
+
+  // Return 0 for sucess and 1 for failure
+  return val;
+}
+
 void setup()
 {
   Serial.begin(115200);
+
 // Initialize SPIFFS
 #ifdef ESP32
   if (!SPIFFS.begin(true))
@@ -168,76 +201,121 @@ void setup()
   }
 #endif
 
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
-  if (WiFi.waitForConnectResult() != WL_CONNECTED)
+  if (!SPIFFS.exists("/config.json"))
   {
-    Serial.println("WiFi Failed!");
-    return;
+    Serial.println("No file, setting defaults!");
+    // Create items to store in our json object. Init to some default values
+    output_doc["SetLightTimeOn"] = "2021-08-01T12:00";
+    output_doc["SetLightTimeOff"] = "2021-08-01T12:00";
+    output_doc["SetWaterTimeOn"] = "2021-08-01T12:00";
+    output_doc["SetWaterTimeOff"] = "2021-08-01T12:00";
+    output_doc["BTN_Water"] = false;
+    output_doc["BTN_Lights"] = false;
   }
-  Serial.println();
-  Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());
+  else
+  {
+    Serial.println("Trying to read from file!");
+    StaticJsonDocument<10> input_doc;
+    File myfile = SPIFFS.open("/config.json", "r");
 
-  // Send web page with input fields to client
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send_P(200, "text/html", index_html, processor); });
+    // Deserialize the JSON document
+    DeserializationError error = deserializeJson(input_doc, myfile);
 
-  // Send a GET request to <ESP_IP>/get?inputString=<inputMessage>
-  server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
+    // Check for an Error
+    if (error)
+    {
+      Serial.println("Couldn't read from file using the defaults!");
+      // use the defaults
+      output_doc["SetLightTimeOn"] = "2021-08-01T12:00";
+      output_doc["SetLightTimeOff"] = "2021-08-01T12:00";
+      output_doc["SetWaterTimeOn"] = "2021-08-01T12:00";
+      output_doc["SetWaterTimeOff"] = "2021-08-01T12:00";
+      output_doc["BTN_Water"] = false;
+      output_doc["BTN_Lights"] = false;
+    }
+    else
+    {
+      Serial.println("Successfully read from the file!");
+      // read the values from the file.
+      output_doc["SetLightTimeOn"] = input_doc["SetLightTimeOn"];
+      output_doc["SetLightTimeOff"] = input_doc["SetLightTimeOff"];
+      output_doc["SetWaterTimeOn"] = input_doc["SetWaterTimeOn"];
+      output_doc["SetWaterTimeOff"] = input_doc["SetWaterTimeOff"];
+      output_doc["BTN_Water"] = input_doc["BTN_Water"];
+      output_doc["BTN_Lights"] = input_doc["BTN_Lights"];
+    }
+  }
+
+WiFi.mode(WIFI_STA);
+WiFi.begin(ssid, password);
+if (WiFi.waitForConnectResult() != WL_CONNECTED)
+{
+  Serial.println("WiFi Failed!");
+  return;
+}
+Serial.println();
+Serial.print("IP Address: ");
+Serial.println(WiFi.localIP());
+
+// Send web page with input fields to client
+server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+          { request->send_P(200, "text/html", index_html, processor); });
+
+// Send a GET request to <ESP_IP>/get?inputString=<inputMessage>
+server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
+          {
+            String inputMessage;
+            // GET inputString value on <ESP_IP>/get?inputString=<inputMessage>
+            if (request->hasParam("SetLightTimeOn"))
             {
-              String inputMessage;
-              // GET inputString value on <ESP_IP>/get?inputString=<inputMessage>
-              if (request->hasParam("SetLightTimeOn"))
-              {
-                inputMessage = request->getParam("SetLightTimeOn")->value();
-                writeFile(SPIFFS, "/config.json", inputMessage.c_str());
-              }
-              // GET inputInt value on <ESP_IP>/get?inputInt=<inputMessage>
-              else if (request->hasParam("SetLightTimeOff"))
-              {
-                inputMessage = request->getParam("SetLightTimeOff")->value();
-                writeFile(SPIFFS, "/config.json", inputMessage.c_str());
-              }
-              // GET inputFloat value on <ESP_IP>/get?inputFloat=<inputMessage>
-              else if (request->hasParam("SetWaterTimeOn"))
-              {
-                inputMessage = request->getParam("SetWaterTimeOn")->value();
-                writeFile(SPIFFS, "/config.json", inputMessage.c_str());
-              }
-              else if (request->hasParam("SetWaterTimeOff"))
-              {
-                inputMessage = request->getParam("SetWaterTimeOff")->value();
-                writeFile(SPIFFS, "/config.json", inputMessage.c_str());
-              }
-              else if (request->hasParam("BTN_LightsOn"))
-              {
-                inputMessage = request->getParam("BTN_LightsOn")->value();
-                writeFile(SPIFFS, "/config.json", "True");
-              }
-              else if (request->hasParam("BTN_LightsOff"))
-              {
-                inputMessage = request->getParam("BTN_LightsOff")->value();
-                writeFile(SPIFFS, "/config.json", "False");
-              }
-              else if (request->hasParam("BTN_WaterOn"))
-              {
-                inputMessage = request->getParam("BTN_WaterOn")->value();
-                writeFile(SPIFFS, "/config.json", "True");
-              }
-              else if (request->hasParam("BTN_WaterOff"))
-              {
-                inputMessage = request->getParam("BTN_WaterOff")->value();
-                writeFile(SPIFFS, "/config.json", "False");
-              }
-              else
-              {
-                inputMessage = "No message sent";
-              }
-              request->send(200, "text/text", inputMessage);
-            });
-  server.onNotFound(notFound);
-  server.begin();
+              inputMessage = request->getParam("SetLightTimeOn")->value();
+              writeFile(SPIFFS, "/config.json", inputMessage.c_str());
+            }
+            // GET inputInt value on <ESP_IP>/get?inputInt=<inputMessage>
+            else if (request->hasParam("SetLightTimeOff"))
+            {
+              inputMessage = request->getParam("SetLightTimeOff")->value();
+              writeFile(SPIFFS, "/config.json", inputMessage.c_str());
+            }
+            // GET inputFloat value on <ESP_IP>/get?inputFloat=<inputMessage>
+            else if (request->hasParam("SetWaterTimeOn"))
+            {
+              inputMessage = request->getParam("SetWaterTimeOn")->value();
+              writeFile(SPIFFS, "/config.json", inputMessage.c_str());
+            }
+            else if (request->hasParam("SetWaterTimeOff"))
+            {
+              inputMessage = request->getParam("SetWaterTimeOff")->value();
+              writeFile(SPIFFS, "/config.json", inputMessage.c_str());
+            }
+            else if (request->hasParam("BTN_LightsOn"))
+            {
+              inputMessage = request->getParam("BTN_LightsOn")->value();
+              writeFile(SPIFFS, "/config.json", "True");
+            }
+            else if (request->hasParam("BTN_LightsOff"))
+            {
+              inputMessage = request->getParam("BTN_LightsOff")->value();
+              writeFile(SPIFFS, "/config.json", "False");
+            }
+            else if (request->hasParam("BTN_WaterOn"))
+            {
+              inputMessage = request->getParam("BTN_WaterOn")->value();
+              writeFile(SPIFFS, "/config.json", "True");
+            }
+            else if (request->hasParam("BTN_WaterOff"))
+            {
+              inputMessage = request->getParam("BTN_WaterOff")->value();
+              writeFile(SPIFFS, "/config.json", "False");
+            }
+            else
+            {
+              inputMessage = "No message sent";
+            }
+            request->send(200, "text/text", inputMessage);
+          });
+server.onNotFound(notFound);
+server.begin();
 }
 
 void loop()
