@@ -29,7 +29,7 @@ const char *ssid = "";
 const char *password = "";
 
 // Create a json object to hold our json in RAM
-StaticJsonDocument<10> output_doc;
+StaticJsonDocument<512> output_doc;
 
 // HTML web page to handle 3 input fields (inputString, inputInt, inputFloat)
 const char index_html[] PROGMEM = R"rawliteral(
@@ -68,6 +68,8 @@ const char index_html[] PROGMEM = R"rawliteral(
   </form><br>
   <iframe style="display:none" name="hidden-form"></iframe>
 </body></html>)rawliteral";
+
+const char * path = "/config.json";
 
 void notFound(AsyncWebServerRequest *request)
 {
@@ -120,88 +122,79 @@ String processor(const String &var)
   Serial.println(var);
   if (var == "SetLightTimeOn")
   {
-    return readFile(SPIFFS, "/config.json");
+    String myval = output_doc["SetLightTimeOn"];
+    return myval;
   }
   else if (var == "SetLightTimeOff")
   {
-    return readFile(SPIFFS, "/config.json");
+    return output_doc["SetLightTimeOff"];
   }
   else if (var == "SetWaterTimeOn")
   {
-    return readFile(SPIFFS, "/config.json");
+    return output_doc["SetWaterTimeOn"];
   }
   else if (var == "SetWaterTimeOff")
   {
-    return readFile(SPIFFS, "/config.json");
+    return output_doc["SetWaterTimeOff"];
   }
   else if (var == "BTN_WaterOn")
   {
-    return readFile(SPIFFS, "/config.json");
+    return output_doc["BTN_WaterOn"];
   }
   else if (var == "BTN_WaterOff")
   {
-    return readFile(SPIFFS, "/config.json");
+    return output_doc["BTN_WaterOff"];
   }
   else if (var == "BTN_LightsOn")
   {
-    return readFile(SPIFFS, "/config.json");
+    return output_doc["BTN_LightsOn"];
   }
   else if (var == "BTN_LightsOff")
   {
-    return readFile(SPIFFS, "/config.json");
+    return output_doc["BTN_LightsOff"];
   }
   return String();
 }
 
-void write_json_values(const char *filename, JsonDocument &json_doc)
+void write_json_values(const char *filename, char *contents)
 {
-  // Open the file for writting
-  File myfile = SPIFFS.open(filename, "w");
-
-  // Access our json values & serialize them
-  char output[50] = "";
-  serializeJson(json_doc, output);
-
   // Write to the file
-  myfile.write(output, 50);
+  writeFile(SPIFFS, path, contents);
 
-  // Close the file
-  myfile.close();
+  Serial.print(contents);
 }
 
-int read_json_values(const char *filename, JsonDocument &json_doc)
+String read_json_values(const char *filename)
 {
-  uint val = 0;
   // Get the contents of the file
-  char input[50] = readFile(SPIFFS, file); // PICK UP WORK HERE
+  String input = readFile(SPIFFS, filename);
 
-  // Access our json values & deserialize them
-  deserializeJson(json_doc, input);
+  Serial.print(input);
 
-  // Return 0 for sucess and 1 for failure
-  return val;
+  // Return the results
+  return input;
 }
 
 void setup()
 {
   Serial.begin(115200);
 
-// Initialize SPIFFS
-#ifdef ESP32
+  // Init to some default values
+  output_doc["SetLightTimeOn"] = "";
+  output_doc["SetLightTimeOff"] = "";
+  output_doc["SetWaterTimeOn"] = "";
+  output_doc["SetWaterTimeOff"] = "";
+  output_doc["BTN_WaterOn"] = false;
+  output_doc["BTN_LightsOn"] = false;
+
+  // Initialize SPIFFS
   if (!SPIFFS.begin(true))
   {
     Serial.println("An Error has occurred while mounting SPIFFS");
     return;
   }
-#else
-  if (!SPIFFS.begin())
-  {
-    Serial.println("An Error has occurred while mounting SPIFFS");
-    return;
-  }
-#endif
 
-  if (!SPIFFS.exists("/config.json"))
+  if (!SPIFFS.exists(path))
   {
     Serial.println("No file, setting defaults!");
     // Create items to store in our json object. Init to some default values
@@ -209,17 +202,22 @@ void setup()
     output_doc["SetLightTimeOff"] = "2021-08-01T12:00";
     output_doc["SetWaterTimeOn"] = "2021-08-01T12:00";
     output_doc["SetWaterTimeOff"] = "2021-08-01T12:00";
-    output_doc["BTN_Water"] = false;
-    output_doc["BTN_Lights"] = false;
+    output_doc["BTN_WaterOn"] = false;
+    output_doc["BTN_LightsOn"] = false;
+
+    char output[250] = "";
+    serializeJson(output_doc, output);
+    // Lastly, we write those out to a file
+    write_json_values(path, output);
   }
   else
   {
     Serial.println("Trying to read from file!");
-    StaticJsonDocument<10> input_doc;
-    File myfile = SPIFFS.open("/config.json", "r");
+    StaticJsonDocument<512> input_doc;
+    String input = read_json_values(path);
 
     // Deserialize the JSON document
-    DeserializationError error = deserializeJson(input_doc, myfile);
+    DeserializationError error = deserializeJson(input_doc, input);
 
     // Check for an Error
     if (error)
@@ -230,8 +228,13 @@ void setup()
       output_doc["SetLightTimeOff"] = "2021-08-01T12:00";
       output_doc["SetWaterTimeOn"] = "2021-08-01T12:00";
       output_doc["SetWaterTimeOff"] = "2021-08-01T12:00";
-      output_doc["BTN_Water"] = false;
-      output_doc["BTN_Lights"] = false;
+      output_doc["BTN_WaterOn"] = false;
+      output_doc["BTN_LightsOn"] = false;
+
+      char output[250] = "";
+      serializeJson(output_doc, output);
+      // Lastly, we write those out to a file
+      write_json_values(path, output);
     }
     else
     {
@@ -241,8 +244,8 @@ void setup()
       output_doc["SetLightTimeOff"] = input_doc["SetLightTimeOff"];
       output_doc["SetWaterTimeOn"] = input_doc["SetWaterTimeOn"];
       output_doc["SetWaterTimeOff"] = input_doc["SetWaterTimeOff"];
-      output_doc["BTN_Water"] = input_doc["BTN_Water"];
-      output_doc["BTN_Lights"] = input_doc["BTN_Lights"];
+      output_doc["BTN_WaterOn"] = input_doc["BTN_WaterOn"];
+      output_doc["BTN_LightsOn"] = input_doc["BTN_LightsOn"];
     }
   }
 
@@ -269,44 +272,44 @@ server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
             if (request->hasParam("SetLightTimeOn"))
             {
               inputMessage = request->getParam("SetLightTimeOn")->value();
-              writeFile(SPIFFS, "/config.json", inputMessage.c_str());
+              output_doc["SetLightTimeOn"] = inputMessage;
             }
             // GET inputInt value on <ESP_IP>/get?inputInt=<inputMessage>
             else if (request->hasParam("SetLightTimeOff"))
             {
               inputMessage = request->getParam("SetLightTimeOff")->value();
-              writeFile(SPIFFS, "/config.json", inputMessage.c_str());
+              output_doc["SetLightTimeOff"] = inputMessage;
             }
             // GET inputFloat value on <ESP_IP>/get?inputFloat=<inputMessage>
             else if (request->hasParam("SetWaterTimeOn"))
             {
               inputMessage = request->getParam("SetWaterTimeOn")->value();
-              writeFile(SPIFFS, "/config.json", inputMessage.c_str());
+              output_doc["SetWaterTimeOn"] = inputMessage;
             }
             else if (request->hasParam("SetWaterTimeOff"))
             {
               inputMessage = request->getParam("SetWaterTimeOff")->value();
-              writeFile(SPIFFS, "/config.json", inputMessage.c_str());
+              output_doc["SetWaterTimeOff"] = inputMessage;
             }
             else if (request->hasParam("BTN_LightsOn"))
             {
               inputMessage = request->getParam("BTN_LightsOn")->value();
-              writeFile(SPIFFS, "/config.json", "True");
+              output_doc["BTN_LightsOn"] = true;
             }
             else if (request->hasParam("BTN_LightsOff"))
             {
               inputMessage = request->getParam("BTN_LightsOff")->value();
-              writeFile(SPIFFS, "/config.json", "False");
+              output_doc["BTN_LightsOn"] = false;
             }
             else if (request->hasParam("BTN_WaterOn"))
             {
               inputMessage = request->getParam("BTN_WaterOn")->value();
-              writeFile(SPIFFS, "/config.json", "True");
+              output_doc["BTN_WaterOn"] = true;
             }
             else if (request->hasParam("BTN_WaterOff"))
             {
               inputMessage = request->getParam("BTN_WaterOff")->value();
-              writeFile(SPIFFS, "/config.json", "False");
+              output_doc["BTN_WaterOn"] = false;
             }
             else
             {
@@ -321,9 +324,13 @@ server.begin();
 void loop()
 {
   // To access your stored values on inputString, inputInt, inputFloat
-  //String yourInputString = readFile(SPIFFS, "/config.json");
+  //String yourInputString = readFile(SPIFFS, path);
   //Serial.print("*** Your inputString: ");
   // Serial.println(yourInputString);
 
   delay(5000);
+  char output[250] = "";
+  serializeJson(output_doc, output);
+  // Lastly, we write those out to a file
+  write_json_values(path, output);
 }
