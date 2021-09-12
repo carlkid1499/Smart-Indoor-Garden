@@ -22,7 +22,7 @@
 #include <SPIFFS.h>
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
-#define debug false
+#define debug true
 
 AsyncWebServer server(80);
 
@@ -144,9 +144,100 @@ void update_index_html()
   String val4 = output_doc["SetWaterTimeOff"];
   String val5 = output_doc["BTN_WaterOn"];
   String val6 = output_doc["BTN_LightsOn"];
-  
+  String button1 = "";
+  String button2 = "";
+  String button3 = "";
+  String button4 = "";
+
+  // Based on what val5 and val6 are lets's update the button colors
+  if(val5 == "true" && val6 == "true")
+  {
+    // set those buttons to green
+    button1 = "#4CAF50"; // green, water on
+    button2 = "#e7e7e7"; //gray, water off
+    button3 = "#4CAF50"; // green, lights on
+    button4 = "#e7e7e7"; // gray, lights off
+  }
+  else if(val5 == "false" && val6 == "false")
+  {
+    // set those buttons to red
+    button1 = "#e7e7e7"; // gray, water on
+    button2 = "#f44336"; // red, water off
+    button3 = "#e7e7e7"; // gray, lights on
+    button4 = "#f44336"; // red, lights off
+  }
+  else if(val5 == "true" && val6 == "false")
+  {
+    // set one button to green and one to red
+    button1 = "#4CAF50"; // green, water on
+    button2 = "#e7e7e7"; // gray, water off
+    button3 = "#e7e7e7"; // gray, lights on
+    button4 = "#f44336"; // red, lights off
+  }
+  else // val5 is false and val6 is true
+  {
+    // set one button to red and one to green
+    button1 = "#e7e7e7"; // gray, water on
+    button2 = "#f44336"; // red, water off
+    button3 = "#4CAF50"; // green, lights on
+    button4 = "#e7e7e7"; // gray, lights off
+  }
+
   index_html = String(R"rawliteral(
 <!DOCTYPE HTML><html><head>
+  <style>
+  .button1 {
+    background-color: )rawliteral") + button1 + String(R"rawliteral(;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+
+  .button2 {
+    background-color: )rawliteral") + button2 + String(R"rawliteral(;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+
+  .button3 {
+    background-color: )rawliteral") + button3 + String(R"rawliteral(;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+  
+  .button4 {
+    background-color: )rawliteral") + button4 + String(R"rawliteral(;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+  </style>
   <title>Smart Garden Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script>
@@ -176,12 +267,12 @@ void update_index_html()
     <input type="submit" value="Submit" onclick="submitMessage()">
   </form><br>
   <form action="/get" target="hidden-form">
-    <input type="submit" name="BTN_WaterOn" value="Water On">
-    <input type="submit" name="BTN_WaterOff" value="Water Off">
+    <input type="submit" name="BTN_WaterOn" value="Water On" class="button1">
+    <input type="submit" name="BTN_WaterOff" value="Water Off" class="button2">
   </form><br>
   <form action="/get" target="hidden-form">
-    <input type="submit" name="BTN_LightsOn" value="Lights On">
-    <input type="submit" name="BTN_LightsOff" value="Lights Off">
+    <input type="submit" name="BTN_LightsOn" value="Lights On" class="button3">
+    <input type="submit" name="BTN_LightsOff" value="Lights Off" class="button4">
   </form><br>
   <iframe style="display:none" name="hidden-form"></iframe>
 </body></html>)rawliteral");
