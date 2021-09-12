@@ -37,42 +37,7 @@ StaticJsonDocument<512> output_doc;
 const char *path = "/config.json";
 
 // HTML web page to handle input fields (time, radio buttons)
-const char index_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE HTML><html><head>
-  <title>Smart Garden Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script>
-    function submitMessage() {
-      alert("Saving value to ESP SPIFFS");
-      setTimeout(function(){ document.location.reload(false); }, 500);   
-    }
-  </script></head><body>
-  <form action="/get" target="hidden-form">
-    Set Light Time On: <input type="datetime-local" name="SetLightTimeOn" value="2021-08-01T12:00">
-    <input type="submit" value="Submit" onclick="submitMessage()">
-  </form><br>
-  <form action="/get" target="hidden-form">
-    Set Light Time Off: <input type="datetime-local" name="SetLightTimeOff" value="2021-08-01T12:00">
-    <input type="submit" value="Submit" onclick="submitMessage()">
-  </form><br>
-  <form action="/get" target="hidden-form">
-    Set Water Time On: <input type="datetime-local" name="SetWaterTimeOn" value="2021-08-01T12:00">
-    <input type="submit" value="Submit" onclick="submitMessage()">
-  </form><br>
-  <form action="/get" target="hidden-form">
-    Set Water Time Off: <input type="datetime-local" name="SetWaterTimeOff" value="2021-08-01T12:00">
-    <input type="submit" value="Submit" onclick="submitMessage()">
-  </form><br>
-  <form action="/get" target="hidden-form">
-    <input type="submit" name="BTN_WaterOn" value="Water On">
-    <input type="submit" name="BTN_WaterOff" value="Water Off">
-  </form><br>
-  <form action="/get" target="hidden-form">
-    <input type="submit" name="BTN_LightsOn" value="Lights On">
-    <input type="submit" name="BTN_LightsOff" value="Lights Off">
-  </form><br>
-  <iframe style="display:none" name="hidden-form"></iframe>
-</body></html>)rawliteral";
+String index_html = "";
 
 // A func to handle pages that don't exist
 void notFound(AsyncWebServerRequest *request)
@@ -169,6 +134,59 @@ String read_json_values(const char *filename)
   return input;
 }
 
+// A func to update the index HTML
+void update_index_html()
+{
+  // Save the output doc values as strings so we can concat and update the index html
+  String val1 = output_doc["SetLightTimeOn"];
+  String val2 = output_doc["SetLightTimeOff"];
+  String val3 = output_doc["SetWaterTimeOn"];
+  String val4 = output_doc["SetWaterTimeOff"];
+  String val5 = output_doc["BTN_WaterOn"];
+  String val6 = output_doc["BTN_LightsOn"];
+  
+  index_html = String(R"rawliteral(
+<!DOCTYPE HTML><html><head>
+  <title>Smart Garden Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    function submitMessage() {
+      alert("Saving value to ESP SPIFFS");
+      setTimeout(function(){ document.location.reload(false); }, 500);   
+    }
+  </script></head><body>
+  <form action="/get" target="hidden-form">
+    Set Light Time On: <input type="datetime-local" name="SetLightTimeOn" value=)rawliteral") +
+               String("\"") + val1 + String("\"") + String(R"rawliteral(>
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    Set Light Time Off: <input type="datetime-local" name="SetLightTimeOff" value=)rawliteral") +
+               String("\"") + val2 + String("\"") + String(R"rawliteral(>
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    Set Water Time On: <input type="datetime-local" name="SetWaterTimeOn" value=)rawliteral") +
+               String("\"") + val3 + String("\"") + String(R"rawliteral(>
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    Set Water Time Off: <input type="datetime-local" name="SetWaterTimeOff" value=)rawliteral") +
+               String("\"") + val4 + String("\"") + String(R"rawliteral(>
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    <input type="submit" name="BTN_WaterOn" value="Water On">
+    <input type="submit" name="BTN_WaterOff" value="Water Off">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    <input type="submit" name="BTN_LightsOn" value="Lights On">
+    <input type="submit" name="BTN_LightsOff" value="Lights Off">
+  </form><br>
+  <iframe style="display:none" name="hidden-form"></iframe>
+</body></html>)rawliteral");
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -206,6 +224,9 @@ void setup()
     serializeJson(output_doc, output);
     // Lastly, we write those out to a file
     write_json_values(path, output);
+
+    // Update the index html
+    update_index_html();
   }
   else
   {
@@ -238,6 +259,9 @@ void setup()
       serializeJson(output_doc, output);
       // Lastly, we write those out to a file
       write_json_values(path, output);
+
+      // Update the index html
+      update_index_html();
     }
     else
     {
@@ -252,6 +276,9 @@ void setup()
       output_doc["SetWaterTimeOff"] = input_doc["SetWaterTimeOff"];
       output_doc["BTN_WaterOn"] = input_doc["BTN_WaterOn"];
       output_doc["BTN_LightsOn"] = input_doc["BTN_LightsOn"];
+
+      // Update the index html
+      update_index_html();
     }
   }
 
@@ -271,7 +298,7 @@ void setup()
 
   // Send web page with input fields to client
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send_P(200, "text/html", index_html); });
+            { request->send_P(200, "text/html", index_html.c_str()); });
 
   // Send a GET request to <ESP_IP>/get?inputString=<inputMessage>
   server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -338,4 +365,6 @@ void loop()
   serializeJson(output_doc, output);
   // Lastly, we write those out to a file
   write_json_values(path, output);
+  // Update the index html
+  update_index_html();
 }
