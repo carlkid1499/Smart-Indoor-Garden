@@ -240,39 +240,34 @@ void update_index_html()
   </style>
   <title>Smart Garden Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script>
-    function submitMessage() {
-      alert("Saving value to ESP SPIFFS");
-      setTimeout(function(){ document.location.reload(false); }, 500);   
-    }
-  </script></head><body>
+  </head><body>
   <form action="/get" target="hidden-form">
     Set Light Time On: <input type="datetime-local" name="SetLightTimeOn" value=)rawliteral") +
                String("\"") + val1 + String("\"") + String(R"rawliteral(>
-    <input type="submit" value="Submit" onclick="submitMessage()">
+    <input type="submit" value="Submit" onClick="window.location.reload();">
   </form><br>
   <form action="/get" target="hidden-form">
     Set Light Time Off: <input type="datetime-local" name="SetLightTimeOff" value=)rawliteral") +
                String("\"") + val2 + String("\"") + String(R"rawliteral(>
-    <input type="submit" value="Submit" onclick="submitMessage()">
+    <input type="submit" value="Submit" onClick="window.location.reload();">
   </form><br>
   <form action="/get" target="hidden-form">
     Set Water Time On: <input type="datetime-local" name="SetWaterTimeOn" value=)rawliteral") +
                String("\"") + val3 + String("\"") + String(R"rawliteral(>
-    <input type="submit" value="Submit" onclick="submitMessage()">
+    <input type="submit" value="Submit" onClick="window.location.reload();">
   </form><br>
   <form action="/get" target="hidden-form">
     Set Water Time Off: <input type="datetime-local" name="SetWaterTimeOff" value=)rawliteral") +
                String("\"") + val4 + String("\"") + String(R"rawliteral(>
-    <input type="submit" value="Submit" onclick="submitMessage()">
+    <input type="submit" value="Submit" onClick="window.location.reload();">
   </form><br>
   <form action="/get" target="hidden-form">
-    <input type="submit" name="BTN_WaterOn" value="Water On" class="button1">
-    <input type="submit" name="BTN_WaterOff" value="Water Off" class="button2">
+    <input type="submit" name="BTN_WaterOn" value="Water On" class="button1" onClick="window.location.reload();">
+    <input type="submit" name="BTN_WaterOff" value="Water Off" class="button2" onClick="window.location.reload();">
   </form><br>
   <form action="/get" target="hidden-form">
-    <input type="submit" name="BTN_LightsOn" value="Lights On" class="button3">
-    <input type="submit" name="BTN_LightsOff" value="Lights Off" class="button4">
+    <input type="submit" name="BTN_LightsOn" value="Lights On" class="button3" onClick="window.location.reload();"> 
+    <input type="submit" name="BTN_LightsOff" value="Lights Off" class="button4" onClick="window.location.reload();">
   </form><br>
   <iframe style="display:none" name="hidden-form"></iframe>
 </body></html>)rawliteral");
@@ -451,7 +446,7 @@ void setup()
 void loop()
 {
 
-  delay(5000);
+  delay(1000);
   char output[250] = "";
   serializeJson(output_doc, output);
   // Lastly, we write those out to a file
