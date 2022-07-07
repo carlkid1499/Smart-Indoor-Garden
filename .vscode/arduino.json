@@ -1,5 +1,0 @@
-{
-    "port": "COM3",
-    "board": "arduino:avr:uno",
-    "sketch": "smart_garden_Alpha\\smart_garden_Alpha.ino"
-}
