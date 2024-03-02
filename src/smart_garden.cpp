@@ -15,35 +15,8 @@
 
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
 #include <Arduino.h>
+#include "smart_garden.h"
 #include <Wire.h>
-#include "RTClib.h"
-// Libs for SD card on RTC
-#include <SPI.h>
-#include <SD.h>
-// Libs for ESP
-
-RTC_PCF8523 rtc;
-
-#define Relay_Light 7
-#define Relay_Water_1 5
-#define Relay_Water_2 6
-#define LED_1 8
-#define ESPCS 9
-#define SDCS 10
-
-// Name of the log file. It'll be on boot up.
-File logfile;
-
-// Create 2D array for days
-char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-
-void printDirectory(File dir, int numTabs);
-void error(uint8_t errno);
-void setup();
-void loop();
-void log_msg(char *message, DateTime CurrTime);
-void turn_lights_on(DateTime const &CurrTime);
-void turn_lights_off(DateTime const &CurrTime);
 
 // Define error function
 void error(uint8_t errno)
@@ -78,11 +51,12 @@ void setup()
 
   if (!rtc.initialized()) // If RTC is no running
   {
-    Serial.println("RTC is NOT running!");
+    Serial.println("RTC IS NOT running!");
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); // try to adjust time anyways
   }
   else // if RTC is running
   {
+    Serial.println("RTC IS running!");
     // following line sets the RTC to the date & time this sketch was compiled
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
@@ -124,6 +98,17 @@ void setup()
     {
       break;
     }
+
+    // No more room, all files exist. Purge
+    for (uint8_t i = 0; i < 100; i++)
+    {
+      filename[7] = '0' + i / 10;
+      filename[8] = '0' + i % 10;
+      SD.remove(filename);
+    }
+
+    // Start back at 00
+    strcpy(filename, "/DATLOG00.TXT");
   }
 
   logfile = SD.open(filename, FILE_WRITE);
@@ -172,16 +157,23 @@ void loop()
                               (CurrTime.minute() >= LightsOnTime.minute()) &&
                               (CurrTime.second() >= LightsOnTime.second());
 
-  auto passed_turn_lighs_off = (CurrTime.hour() >= LightsOffTime.hour()) &&
-                               (CurrTime.minute() >= LightsOffTime.minute()) &&
-                               (CurrTime.second() >= LightsOffTime.second());
+  auto passed_turn_lighs_off =
+      // Check are we passed Turn Off Time
+      ((CurrTime.hour() >= LightsOffTime.hour()) &&
+       (CurrTime.minute() >= LightsOffTime.minute()) &&
+       (CurrTime.second() >= LightsOffTime.second())) ||
+
+      // Check are we before turn On Time
+      ((CurrTime.hour() <= LightsOnTime.hour()) &&
+       (CurrTime.minute() <= LightsOnTime.minute()) &&
+       (CurrTime.second() <= LightsOnTime.second()));
 
   // Let's assume we just powered on the arduino. If we have passed our on time lets turn it on
   if (passed_turn_lighs_on && !BootUpLightsOn)
   {
     turn_lights_on(CurrTime);
     BootUpLightsOn = true;
-    Serial.println("Lights on...");
+    Serial.println("Grow Lights on...");
   }
 
   // Let's assume we just powered on the arduino. If we have passed our off time lets turn it off
@@ -189,7 +181,7 @@ void loop()
   {
     turn_lights_off(CurrTime);
     BootUpLightsOff = true;
-    Serial.println("Lights off...");
+    Serial.println("Grow Lights off...");
   }
 
   // If our time on has come
@@ -198,7 +190,7 @@ void loop()
     turn_lights_on(CurrTime);
     ScheduledLightsOn = true;
     ScheduledLightsOff = false;
-    Serial.println("Lights on...");
+    Serial.println("Grow Lights on...");
   }
 
   // If our time off has come
@@ -207,7 +199,7 @@ void loop()
     turn_lights_off(CurrTime);
     ScheduledLightsOn = false;
     ScheduledLightsOff = true;
-    Serial.println("Lights off...");
+    Serial.println("Grow Lights off...");
   }
 
   /***** BEGIN: Sleep when there is nothing else to do. *****/
