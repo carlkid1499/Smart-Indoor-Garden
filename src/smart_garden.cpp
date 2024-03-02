@@ -16,7 +16,6 @@
 // Date and time functions using a DS1307 RTC connected via I2C and Wire lib
 #include <Arduino.h>
 #include "smart_garden.h"
-#include <Wire.h>
 
 // Define error function
 void error(uint8_t errno)
@@ -210,7 +209,7 @@ void loop()
 }
 
 /* Function for logging to SD card */
-void log_msg(char *message, DateTime CurrTime)
+void log_msg(char const *message, DateTime const &CurrTime)
 {
   logfile.println(message);
   logfile.print(CurrTime.year(), DEC);

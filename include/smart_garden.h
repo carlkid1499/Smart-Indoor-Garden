@@ -24,7 +24,7 @@ void printDirectory(File dir, int numTabs);
 void error(uint8_t errno);
 void setup();
 void loop();
-void log_msg(char *message, DateTime CurrTime);
+void log_msg(char const *message, DateTime const &CurrTime);
 void turn_lights_on(DateTime const &CurrTime);
 void turn_lights_off(DateTime const &CurrTime);
 
