@@ -42,6 +42,8 @@ void error(uint8_t errno);
 void setup();
 void loop();
 void log_msg(char *message, DateTime CurrTime);
+void turn_lights_on(DateTime const &CurrTime);
+void turn_lights_off(DateTime const &CurrTime);
 
 // Define error function
 void error(uint8_t errno)
@@ -67,7 +69,7 @@ void error(uint8_t errno)
 void setup()
 {
   /***** BEGIN: Code for the RTC Unit *****/
-  Serial.begin(57600);
+  Serial.begin(9600);
   if (!rtc.begin())
   {
     Serial.println("Couldn't find RTC");
@@ -146,284 +148,72 @@ void setup()
 }
 
 // define the infinite loop function
+static bool BootUpLightsOn = false;
+static bool BootUpLightsOff = false;
+static bool ScheduledLightsOn = false;
+static bool ScheduledLightsOff = false;
 void loop()
 {
 
-  DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
-  switch (CurrTime.dayOfTheWeek())
+  DateTime CurrTime = rtc.now();                        // grabs the current time from the RTC
+  DateTime LightsOnTime = DateTime(0, 0, 0, 3, 0, 1);   // 3:00:01 am
+  DateTime LightsOffTime = DateTime(0, 0, 0, 17, 0, 1); // 17:00:01 pm
+
+  auto turn_lighs_on = (CurrTime.hour() == LightsOnTime.hour()) &&
+                       (CurrTime.minute() == LightsOnTime.minute()) &&
+                       (CurrTime.second() >= LightsOnTime.second());
+
+  auto turn_lighs_off = (CurrTime.hour() == LightsOffTime.hour()) &&
+                        (CurrTime.minute() == LightsOffTime.minute()) &&
+                        (CurrTime.second() >= LightsOffTime.second());
+
+  auto passed_turn_lighs_on = (CurrTime.hour() >= LightsOnTime.hour()) &&
+                              (CurrTime.minute() >= LightsOnTime.minute()) &&
+                              (CurrTime.second() >= LightsOnTime.second());
+
+  auto passed_turn_lighs_off = (CurrTime.hour() >= LightsOffTime.hour()) &&
+                               (CurrTime.minute() >= LightsOffTime.minute()) &&
+                               (CurrTime.second() >= LightsOffTime.second());
+
+  // Let's assume we just powered on the arduino. If we have passed our on time lets turn it on
+  if (passed_turn_lighs_on && !BootUpLightsOn)
   {
-  /* ----- Sunday Schedule Begins Here ----- */
-  case 0: // Sunday
-    switch (CurrTime.hour())
-    {
-    case 8: // 8 am
-      switch (CurrTime.minute())
-      {
-      case 1: // 8:01 am
-      {
-
-        char message[] = "----- Message: Grow Lights On -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, HIGH);
-        break; // Sunday Case 1 break
-      }
-      case 30:
-        switch (CurrTime.second())
-        {
-        case 1: // 8:30:01 am
-        {
-
-          char message[] = "----- Message: Water Pump 1 On -----";
-          log_msg(message, CurrTime);
-
-          digitalWrite(Relay_Water_1, HIGH);
-          delay(20000); // delay 25 secoonds
-          CurrTime = rtc.now();
-          digitalWrite(Relay_Water_1, LOW);
-
-          char message2[] = "----- Message: Water Pump 1 Off -----";
-          log_msg(message2, CurrTime);
-
-          break;
-        }
-        case 31: // 8:30:31 am
-        {
-
-          char message[] = "----- Message: Water Pump 2 On -----";
-          log_msg(message, CurrTime);
-
-          digitalWrite(Relay_Water_2, HIGH);
-          delay(25000); // delay 20 secoonds
-          CurrTime = rtc.now();
-          digitalWrite(Relay_Water_2, LOW);
-
-          char message2[] = "----- Message: Water Pump 2 Off -----";
-          log_msg(message2, CurrTime);
-
-          break;
-        }
-        }
-        break; // Case 30 Break
-      }
-      break;
-
-    case 14: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-      {
-
-        char message[] = "----- Message: Grow Lights Off -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, LOW);
-        break;
-      }
-      }
-      break;
-    }
-    break;
-  /* ----- Sunday Schedule Begins Ends Here ----- */
-
-  /* ----- Monday Schedule Begins Here ----- */
-  case 1:
-    switch (CurrTime.hour())
-    {
-    case 8: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights On -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, HIGH);
-        break;
-      }
-      break;
-
-    case 14: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights Off -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, LOW);
-        break;
-      }
-      break;
-    }
-    break;
-  /* ----- Monday Schedule Begins Ends Here ----- */
-
-  /* ----- Tuesday Schedule Begins Here ----- */
-  case 2:
-    switch (CurrTime.hour())
-    {
-    case 8: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights On -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, HIGH);
-        break;
-      }
-      break;
-
-    case 14: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights Off -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, LOW);
-        break;
-      }
-      break;
-    }
-    break;
-  /* ----- Tuesday Schedule Begins Ends Here ----- */
-
-  /* ----- Wednesday Schedule Begins Here ----- */
-  case 3:
-    switch (CurrTime.hour())
-    {
-    case 8: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights On -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, HIGH);
-        break;
-      }
-      break;
-
-    case 14: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights Off -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, LOW);
-        break;
-      }
-      break;
-    }
-    break;
-  /* ----- Wednesday Schedule Begins Ends Here ----- */
-
-  /* ----- Thursday Schedule Begins Here ----- */
-  case 4:
-    switch (CurrTime.hour())
-    {
-    case 8: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights On -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, HIGH);
-        break;
-      }
-      break;
-
-    case 14: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights Off -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, LOW);
-        break;
-      }
-      break;
-    }
-    break;
-  /* ----- Thursday Schedule Begins Ends Here ----- */
-
-  /* ----- Friday Schedule Begins Here ----- */
-  case 5:
-    switch (CurrTime.hour())
-    {
-    case 8: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights On -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, HIGH);
-        break;
-      }
-      break; // break for 7
-
-    case 14: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights Off -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, LOW);
-        break;
-      }
-      break; // break for 13
-    }
-    break;
-  /* ----- Friday Schedule Begins Ends Here ----- */
-
-  /* ----- Saturday Schedule Begins Here ----- */
-  case 6:
-    switch (CurrTime.hour())
-    {
-    case 8: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights On -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, HIGH);
-        break;
-      }
-      break;
-
-    case 14: // hour of day to do something
-      switch (CurrTime.minute())
-      {
-      case 1:
-
-        char message[] = "----- Message: Grow Lights Off -----";
-        log_msg(message, CurrTime);
-
-        digitalWrite(Relay_Light, LOW);
-        break;
-      }
-      break;
-    }
-    break;
-    /* ----- Saturday Schedule Begins Ends Here ----- */
+    turn_lights_on(CurrTime);
+    BootUpLightsOn = true;
+    Serial.println("Lights on...");
   }
+
+  // Let's assume we just powered on the arduino. If we have passed our off time lets turn it off
+  if (passed_turn_lighs_off && !BootUpLightsOff)
+  {
+    turn_lights_off(CurrTime);
+    BootUpLightsOff = true;
+    Serial.println("Lights off...");
+  }
+
+  // If our time on has come
+  if (turn_lighs_on && !ScheduledLightsOn)
+  {
+    turn_lights_on(CurrTime);
+    ScheduledLightsOn = true;
+    ScheduledLightsOff = false;
+    Serial.println("Lights on...");
+  }
+
+  // If our time off has come
+  if (turn_lighs_off && !ScheduledLightsOff)
+  {
+    turn_lights_off(CurrTime);
+    ScheduledLightsOn = false;
+    ScheduledLightsOff = true;
+    Serial.println("Lights off...");
+  }
+
+  /***** BEGIN: Sleep when there is nothing else to do. *****/
+  digitalWrite(LED_1, LOW);
+  delay(1000); // waits for a second
+  digitalWrite(LED_1, HIGH);
+  /***** BEGIN: Sleep when there is nothing else to do. *****/
 }
 
 /* Function for logging to SD card */
@@ -476,4 +266,18 @@ void printDirectory(File dir, int numTabs)
     }
     entry.close();
   }
+}
+
+void turn_lights_on(DateTime const &CurrTime)
+{
+  char message[] = "----- Message: Grow Lights On -----";
+  log_msg(message, CurrTime);
+  digitalWrite(Relay_Light, HIGH);
+}
+
+void turn_lights_off(DateTime const &CurrTime)
+{
+  char message[] = "----- Message: Grow Lights Off -----";
+  log_msg(message, CurrTime);
+  digitalWrite(Relay_Light, LOW);
 }
