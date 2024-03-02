@@ -118,6 +118,7 @@ void setup()
   {
     filename[7] = '0' + i / 10;
     filename[8] = '0' + i % 10;
+
     // create if does not exist, do not open existing, write, sync after write
     if (!SD.exists(filename))
     {

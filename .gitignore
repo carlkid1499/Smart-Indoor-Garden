@@ -28,4 +28,4 @@ docs/_build/
 
 # Local development
 .vscode
-smart_garden/.pio/*
+.pio/*
