@@ -1,5 +1,5 @@
 /* Smart Garden Project
-** https://github.com/carlkid1499/Smart-Garden  
+** https://github.com/carlkid1499/Smart-Garden
 ** 2 Relay switches to control 2 pumps
 ** RTC added on to keep track of time and SD
 ** DIO 5: Rely_Water_1
@@ -9,7 +9,7 @@
 ** DIO 9: ESP CS
 ** DIO 10: SD CS
 ** DIO 11: MOSI
-** DIO 12: MISO 
+** DIO 12: MISO
 ** DIO 13: SCLK
 */
 
@@ -36,7 +36,6 @@ File logfile;
 
 // Create 2D array for days
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-
 
 void printDirectory(File dir, int numTabs);
 void error(uint8_t errno);
@@ -123,7 +122,7 @@ void setup()
       break;
     }
   }
-  
+
   logfile = SD.open(filename, FILE_WRITE);
   if (!logfile)
   {
@@ -138,12 +137,12 @@ void setup()
 
   /***** BEGIN: Initial Message. Power On. *****/
   DateTime PowerTime = rtc.now();
-  char message [] = "----- Message: System Power On -----";
+  char message[] = "----- Message: System Power On -----";
   log_msg(message, PowerTime);
   /***** END: Initial Message. Power On. *****/
-  
+
   /***** If we get here success *****/
-  digitalWrite(LED_1, HIGH); 
+  digitalWrite(LED_1, HIGH);
 }
 
 // define the infinite loop function
@@ -154,7 +153,7 @@ void loop()
   switch (CurrTime.dayOfTheWeek())
   {
   /* ----- Sunday Schedule Begins Here ----- */
-  case 0: //Sunday
+  case 0: // Sunday
     switch (CurrTime.hour())
     {
     case 8: // 8 am
@@ -162,10 +161,10 @@ void loop()
       {
       case 1: // 8:01 am
       {
-        
-        char message [] = "----- Message: Grow Lights On -----";
+
+        char message[] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, HIGH);
         break; // Sunday Case 1 break
       }
@@ -174,34 +173,34 @@ void loop()
         {
         case 1: // 8:30:01 am
         {
-          
-          char message [] = "----- Message: Water Pump 1 On -----";
+
+          char message[] = "----- Message: Water Pump 1 On -----";
           log_msg(message, CurrTime);
-          
+
           digitalWrite(Relay_Water_1, HIGH);
-          delay(20000); //delay 25 secoonds
+          delay(20000); // delay 25 secoonds
           CurrTime = rtc.now();
           digitalWrite(Relay_Water_1, LOW);
-          
-          char message2 [] = "----- Message: Water Pump 1 Off -----";
+
+          char message2[] = "----- Message: Water Pump 1 Off -----";
           log_msg(message2, CurrTime);
-          
+
           break;
         }
         case 31: // 8:30:31 am
         {
-          
-          char message [] = "----- Message: Water Pump 2 On -----";
+
+          char message[] = "----- Message: Water Pump 2 On -----";
           log_msg(message, CurrTime);
-          
+
           digitalWrite(Relay_Water_2, HIGH);
-          delay(25000); //delay 20 secoonds
+          delay(25000); // delay 20 secoonds
           CurrTime = rtc.now();
           digitalWrite(Relay_Water_2, LOW);
-          
-          char message2 [] = "----- Message: Water Pump 2 Off -----";
+
+          char message2[] = "----- Message: Water Pump 2 Off -----";
           log_msg(message2, CurrTime);
-          
+
           break;
         }
         }
@@ -214,10 +213,10 @@ void loop()
       {
       case 1:
       {
-        
-        char message [] = "----- Message: Grow Lights Off -----";
+
+        char message[] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -235,10 +234,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights On -----";
+
+        char message[] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -248,10 +247,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights Off -----";
+
+        char message[] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -268,10 +267,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights On -----";
+
+        char message[] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -281,10 +280,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights Off -----";
+
+        char message[] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -301,10 +300,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights On -----";
+
+        char message[] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -314,10 +313,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights Off -----";
+
+        char message[] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -334,10 +333,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights On -----";
+
+        char message[] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -347,10 +346,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-         
-        char message [] = "----- Message: Grow Lights Off -----";
+
+        char message[] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -367,10 +366,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights On -----";
+
+        char message[] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -380,10 +379,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights Off -----";
+
+        char message[] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -400,10 +399,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights On -----";
+
+        char message[] = "----- Message: Grow Lights On -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, HIGH);
         break;
       }
@@ -413,10 +412,10 @@ void loop()
       switch (CurrTime.minute())
       {
       case 1:
-        
-        char message [] = "----- Message: Grow Lights Off -----";
+
+        char message[] = "----- Message: Grow Lights Off -----";
         log_msg(message, CurrTime);
-        
+
         digitalWrite(Relay_Light, LOW);
         break;
       }
@@ -448,22 +447,29 @@ void log_msg(char *message, DateTime CurrTime)
   logfile.flush();
 }
 
-void printDirectory(File dir, int numTabs) {
-  while (true) {
+void printDirectory(File dir, int numTabs)
+{
+  while (true)
+  {
 
-    File entry =  dir.openNextFile();
-    if (! entry) {
+    File entry = dir.openNextFile();
+    if (!entry)
+    {
       // no more files
       break;
     }
-    for (uint8_t i = 0; i < numTabs; i++) {
+    for (uint8_t i = 0; i < numTabs; i++)
+    {
       Serial.print('\t');
     }
     Serial.print(entry.name());
-    if (entry.isDirectory()) {
+    if (entry.isDirectory())
+    {
       Serial.println("/");
       printDirectory(entry, numTabs + 1);
-    } else {
+    }
+    else
+    {
       // files have sizes, directories do not
       Serial.print("\t\t");
       Serial.println(entry.size(), DEC);
