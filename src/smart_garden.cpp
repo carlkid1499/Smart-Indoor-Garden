@@ -97,17 +97,19 @@ void setup()
     {
       break;
     }
+  }
 
-    // No more room, all files exist. Purge
-    for (uint8_t i = 0; i < 100; i++)
+  // No more room, all files exist. Purge
+  char match[0];
+  strcpy(match, "9");
+  if ((filename[7] == match[0]) && (filename[8] == match[0]))
+  {
+    for (uint8_t i = 0; i < 99; i++)
     {
       filename[7] = '0' + i / 10;
       filename[8] = '0' + i % 10;
       SD.remove(filename);
     }
-
-    // Start back at 00
-    strcpy(filename, "/DATLOG00.TXT");
   }
 
   logfile = SD.open(filename, FILE_WRITE);
@@ -152,15 +154,22 @@ void loop()
                         (CurrTime.minute() == LightsOffTime.minute()) &&
                         (CurrTime.second() >= LightsOffTime.second());
 
-  auto passed_turn_lighs_on = (CurrTime.hour() >= LightsOnTime.hour()) &&
-                              (CurrTime.minute() >= LightsOnTime.minute()) &&
-                              (CurrTime.second() >= LightsOnTime.second());
+  auto passed_turn_lighs_on =
+      // Check are we passed Turn On Time
+      ((CurrTime.hour() >= LightsOnTime.hour()) &&
+       (CurrTime.minute() >= LightsOnTime.minute()) &&
+       (CurrTime.second() >= LightsOnTime.second())) &&
+
+      // Check are we before Turn Off Time
+      ((CurrTime.hour() <= LightsOffTime.hour()) &&
+       (CurrTime.minute() <= LightsOffTime.minute()) &&
+       (CurrTime.second() <= LightsOffTime.second()));
 
   auto passed_turn_lighs_off =
       // Check are we passed Turn Off Time
       ((CurrTime.hour() >= LightsOffTime.hour()) &&
        (CurrTime.minute() >= LightsOffTime.minute()) &&
-       (CurrTime.second() >= LightsOffTime.second())) ||
+       (CurrTime.second() >= LightsOffTime.second())) &&
 
       // Check are we before turn On Time
       ((CurrTime.hour() <= LightsOnTime.hour()) &&
@@ -172,7 +181,7 @@ void loop()
   {
     turn_lights_on(CurrTime);
     BootUpLightsOn = true;
-    Serial.println("Grow Lights on...");
+    Serial.println("Grow Lights on per first boot...");
   }
 
   // Let's assume we just powered on the arduino. If we have passed our off time lets turn it off
@@ -180,7 +189,7 @@ void loop()
   {
     turn_lights_off(CurrTime);
     BootUpLightsOff = true;
-    Serial.println("Grow Lights off...");
+    Serial.println("Grow Lights off per first boot...");
   }
 
   // If our time on has come
@@ -189,7 +198,7 @@ void loop()
     turn_lights_on(CurrTime);
     ScheduledLightsOn = true;
     ScheduledLightsOff = false;
-    Serial.println("Grow Lights on...");
+    Serial.println("Grow Lights on per schedule...");
   }
 
   // If our time off has come
@@ -198,7 +207,7 @@ void loop()
     turn_lights_off(CurrTime);
     ScheduledLightsOn = false;
     ScheduledLightsOff = true;
-    Serial.println("Grow Lights off...");
+    Serial.println("Grow Lights off per schedule...");
   }
 
   /***** BEGIN: Sleep when there is nothing else to do. *****/
