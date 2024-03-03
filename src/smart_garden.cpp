@@ -100,7 +100,7 @@ void setup()
   }
 
   // No more room, all files exist. Purge
-  char match[0];
+  char match[1];
   strcpy(match, "9");
   if ((filename[7] == match[0]) && (filename[8] == match[0]))
   {
