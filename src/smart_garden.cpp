@@ -169,7 +169,7 @@ void loop()
       // Check are we passed Turn Off Time
       ((CurrTime.hour() >= LightsOffTime.hour()) &&
        (CurrTime.minute() >= LightsOffTime.minute()) &&
-       (CurrTime.second() >= LightsOffTime.second())) &&
+       (CurrTime.second() >= LightsOffTime.second())) ||
 
       // Check are we before turn On Time
       ((CurrTime.hour() <= LightsOnTime.hour()) &&
