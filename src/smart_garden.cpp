@@ -128,6 +128,22 @@ void setup()
   DateTime PowerTime = rtc.now();
   char message[] = "----- Message: System Power On -----";
   log_msg(message, PowerTime);
+
+  Serial.print("PowerTime: ");
+  Serial.print(PowerTime.year(), DEC);
+  Serial.print('/');
+  Serial.print(PowerTime.month(), DEC);
+  Serial.print('/');
+  Serial.print(PowerTime.day(), DEC);
+  Serial.print(" (");
+  Serial.print(daysOfTheWeek[PowerTime.dayOfTheWeek()]);
+  Serial.print(") ");
+  Serial.print(PowerTime.hour(), DEC);
+  Serial.print(':');
+  Serial.print(PowerTime.minute(), DEC);
+  Serial.print(':');
+  Serial.print(PowerTime.second(), DEC);
+  Serial.println();
   /***** END: Initial Message. Power On. *****/
 
   /***** If we get here success *****/
@@ -142,7 +158,24 @@ static bool ScheduledLightsOff = false;
 void loop()
 {
 
-  DateTime CurrTime = rtc.now();                        // grabs the current time from the RTC
+  DateTime CurrTime = rtc.now(); // grabs the current time from the RTC
+
+  Serial.print("CurrTime: ");
+  Serial.print(CurrTime.year(), DEC);
+  Serial.print('/');
+  Serial.print(CurrTime.month(), DEC);
+  Serial.print('/');
+  Serial.print(CurrTime.day(), DEC);
+  Serial.print(" (");
+  Serial.print(daysOfTheWeek[CurrTime.dayOfTheWeek()]);
+  Serial.print(") ");
+  Serial.print(CurrTime.hour(), DEC);
+  Serial.print(':');
+  Serial.print(CurrTime.minute(), DEC);
+  Serial.print(':');
+  Serial.print(CurrTime.second(), DEC);
+  Serial.println();
+
   DateTime LightsOnTime = DateTime(0, 0, 0, 3, 0, 1);   // 3:00:01 am
   DateTime LightsOffTime = DateTime(0, 0, 0, 17, 0, 1); // 17:00:01 pm
 
